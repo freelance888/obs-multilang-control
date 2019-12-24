@@ -1,0 +1,164 @@
+[[package]]
+category = "main"
+description = "Python graph (network) package"
+name = "altgraph"
+optional = false
+python-versions = "*"
+version = "0.16.1"
+
+[[package]]
+category = "main"
+description = "Create cross-platform desktop applications with Python and Qt"
+name = "fbs"
+optional = false
+python-versions = "*"
+version = "0.8.4"
+
+[package.dependencies]
+PyInstaller = ">=3.3"
+
+[package.extras]
+licensing = ["rsa (>=3.4.2)"]
+sentry = ["sentry-sdk (>=0.6.6)"]
+upload = ["boto3"]
+
+[[package]]
+category = "main"
+description = "Mach-O header analysis and editing"
+name = "macholib"
+optional = false
+python-versions = "*"
+version = "1.11"
+
+[package.dependencies]
+altgraph = ">=0.15"
+
+[[package]]
+category = "main"
+description = "Core utilities for Python packages"
+name = "packaging"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "19.2"
+
+[package.dependencies]
+pyparsing = ">=2.0.2"
+six = "*"
+
+[[package]]
+category = "main"
+description = "PyInstaller bundles a Python application and all its dependencies into a single package."
+name = "pyinstaller"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "3.5"
+
+[package.dependencies]
+altgraph = "*"
+setuptools = "*"
+
+[[package]]
+category = "main"
+description = "Python parsing module"
+name = "pyparsing"
+optional = false
+python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
+version = "2.4.5"
+
+[[package]]
+category = "main"
+description = "Python bindings for the Qt cross platform UI and application toolkit"
+name = "pyqt5"
+optional = false
+python-versions = "*"
+version = "5.9.2"
+
+[[package]]
+category = "main"
+description = "A Python bindings generator for C/C++ libraries"
+name = "sip"
+optional = false
+python-versions = ">=3.5.1"
+version = "5.0.1"
+
+[package.dependencies]
+packaging = "*"
+toml = "*"
+
+[[package]]
+category = "main"
+description = "Python 2 and 3 compatibility utilities"
+name = "six"
+optional = false
+python-versions = ">=2.6, !=3.0.*, !=3.1.*"
+version = "1.13.0"
+
+[[package]]
+category = "main"
+description = "Python Library for Tom's Obvious, Minimal Language"
+name = "toml"
+optional = false
+python-versions = "*"
+version = "0.10.0"
+
+[metadata]
+content-hash = "d73f1b12c660df32aa40e55885fb5d60a3dac82f1a984b88b7218d62eafa934c"
+python-versions = "^3.6"
+
+[metadata.files]
+altgraph = [
+    {file = "altgraph-0.16.1-py2.py3-none-any.whl", hash = "sha256:d6814989f242b2b43025cba7161fc1b8fb487a62cd49c49245d6fd01c18ac997"},
+    {file = "altgraph-0.16.1.tar.gz", hash = "sha256:ddf5320017147ba7b810198e0b6619bd7b5563aa034da388cea8546b877f9b0c"},
+]
+fbs = [
+    {file = "fbs-0.8.4.zip", hash = "sha256:3c750ea270c7684bad52f08b60486396b1796d61e6ebc4c17e6f7e2fe95c30c4"},
+]
+macholib = [
+    {file = "macholib-1.11-py2.py3-none-any.whl", hash = "sha256:ac02d29898cf66f27510d8f39e9112ae00590adb4a48ec57b25028d6962b1ae1"},
+    {file = "macholib-1.11.tar.gz", hash = "sha256:c4180ffc6f909bf8db6cd81cff4b6f601d575568f4d5dee148c830e9851eb9db"},
+]
+packaging = [
+    {file = "packaging-19.2-py2.py3-none-any.whl", hash = "sha256:d9551545c6d761f3def1677baf08ab2a3ca17c56879e70fecba2fc4dde4ed108"},
+    {file = "packaging-19.2.tar.gz", hash = "sha256:28b924174df7a2fa32c1953825ff29c61e2f5e082343165438812f00d3a7fc47"},
+]
+pyinstaller = [
+    {file = "PyInstaller-3.5.tar.gz", hash = "sha256:ee7504022d1332a3324250faf2135ea56ac71fdb6309cff8cd235de26b1d0a96"},
+]
+pyparsing = [
+    {file = "pyparsing-2.4.5-py2.py3-none-any.whl", hash = "sha256:20f995ecd72f2a1f4bf6b072b63b22e2eb457836601e76d6e5dfcd75436acc1f"},
+    {file = "pyparsing-2.4.5.tar.gz", hash = "sha256:4ca62001be367f01bd3e92ecbb79070272a9d4964dce6a48a82ff0b8bc7e683a"},
+]
+pyqt5 = [
+    {file = "PyQt5-5.9.2-5.9.3-cp35.cp36.cp37-abi3-macosx_10_6_intel.whl", hash = "sha256:1abd07467539f26e2e08e26cf27f3513d02c20d038f5ba2e860b5e158cf2f8b1"},
+    {file = "PyQt5-5.9.2-5.9.3-cp35.cp36.cp37-abi3-manylinux1_x86_64.whl", hash = "sha256:5dab7244b6932606490b47a0692e03d7b72d89f7d3dfa3d147a8b34d6af72451"},
+    {file = "PyQt5-5.9.2-5.9.3-cp35.cp36.cp37-none-win32.whl", hash = "sha256:53cdaf2e27945c4828c5c346410208a68017ddb7d333e7885b9087ddb02e7de0"},
+    {file = "PyQt5-5.9.2-5.9.3-cp35.cp36.cp37-none-win_amd64.whl", hash = "sha256:c83b5dabf950e47d0ea3f324a80640d25ae4d0ed90013a45f824498b2110ff84"},
+]
+sip = [
+    {file = "sip-5.0.1-cp35-cp35m-macosx_10_6_intel.whl", hash = "sha256:4217a04871925b99283ace2611a711019ce9a198c03b3774c1d61aa38c0f366e"},
+    {file = "sip-5.0.1-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:929ef97465f9a9503a9b5adb3082099ea38b4a8562e9443c65cf320b3fd51efb"},
+    {file = "sip-5.0.1-cp35-cp35m-win32.whl", hash = "sha256:34f3a815ab3e54d4267c84fe04e30aa1a57af1bc5e95a6f148fc9ef3b44272e5"},
+    {file = "sip-5.0.1-cp35-cp35m-win_amd64.whl", hash = "sha256:644be06acf7bd71053018eaf32800a6d3a59665f41d0bba6c34211ba99306a54"},
+    {file = "sip-5.0.1-cp36-cp36m-macosx_10_6_intel.whl", hash = "sha256:559efa6df3b2fcbbfa4c14e739658ba71fb6bdf88bf0a16ab28a38f414f0e005"},
+    {file = "sip-5.0.1-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:73e2921ce56e8df42e1f62090ae2e3721efc3255e7dfd55e1e950482e55a5379"},
+    {file = "sip-5.0.1-cp36-cp36m-win32.whl", hash = "sha256:3db275d1056f699262d85d332a6c6f327aeedc9478a1cff592979ad064c2ca27"},
+    {file = "sip-5.0.1-cp36-cp36m-win_amd64.whl", hash = "sha256:e5137fe40767e660de38d8fca238a88fc8bb2fb3099952f9631b9fbd40898fe8"},
+    {file = "sip-5.0.1-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:1d873e35607a68682ce2e901f99571c3a41848817e485afa636b42a3eaf53c24"},
+    {file = "sip-5.0.1-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:bb71a82162ac546ff2537e29d6bd8c7c153d5d4a89b14f79afe02bb43524b7bf"},
+    {file = "sip-5.0.1-cp37-cp37m-win32.whl", hash = "sha256:37e8ec7e5a538e83bc2b0014ee096c258d5935a6787b7ccb6f6b6cfd58b65de8"},
+    {file = "sip-5.0.1-cp37-cp37m-win_amd64.whl", hash = "sha256:70500797ee6412d239ef71f6d8a035491d5ad4b37239d844288d19f91a07fa6a"},
+    {file = "sip-5.0.1-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:b2b5e94272371e5c1ad337fe284dd60de5e68375b10282230bd0e710b7976f9d"},
+    {file = "sip-5.0.1-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:b5d9b4cd035d69091b2793864b61d112ae8f882b8c356b7bc8bf62a42947a051"},
+    {file = "sip-5.0.1-cp38-cp38-win32.whl", hash = "sha256:52acfdfb9710a1c908ecdbbdb0c5af8e4d0a8297c53dba451c5af69311637971"},
+    {file = "sip-5.0.1-cp38-cp38-win_amd64.whl", hash = "sha256:e52b3ee546772c5b7776ffc87e05837406e7ee29e6edba81d6bcccb327dd9c6b"},
+    {file = "sip-5.0.1.tar.gz", hash = "sha256:299f5463946acf079f35979bf6f598f790a58611ada2514c0d9b04c91b9baee8"},
+]
+six = [
+    {file = "six-1.13.0-py2.py3-none-any.whl", hash = "sha256:1f1b7d42e254082a9db6279deae68afb421ceba6158efa6131de7b3003ee93fd"},
+    {file = "six-1.13.0.tar.gz", hash = "sha256:30f610279e8b2578cab6db20741130331735c781b56053c59c4076da27f06b66"},
+]
+toml = [
+    {file = "toml-0.10.0-py2.7.egg", hash = "sha256:f1db651f9657708513243e61e6cc67d101a39bad662eaa9b5546f789338e07a3"},
+    {file = "toml-0.10.0-py2.py3-none-any.whl", hash = "sha256:235682dd292d5899d361a811df37e04a8828a5b1da3115886b73cf81ebc9100e"},
+    {file = "toml-0.10.0.tar.gz", hash = "sha256:229f81c57791a41d65e399fc06bf0848bab550a9dfd5ed66df18ce5f05e73d5c"},
+]
