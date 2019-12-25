@@ -1,12 +1,35 @@
-from fbs_runtime.application_context.PyQt5 import ApplicationContext
-from PyQt5.QtWidgets import QMainWindow
-
+import logging
+import pathlib
 import sys
 
-if __name__ == '__main__':
-    appctxt = ApplicationContext()       # 1. Instantiate ApplicationContext
-    window = QMainWindow()
-    window.resize(250, 150)
-    window.show()
-    exit_code = appctxt.app.exec_()      # 2. Invoke appctxt.app.exec_()
+
+from app import AppContext
+
+
+def setup_logger(log_path: str = None, log_level=logging.INFO):
+    if log_path is not None:
+        log_path = pathlib.Path(log_path)
+        if not log_path.is_dir():
+            log_path.mkdir()
+        log_path = log_path / "obs-control.log"
+
+    logging.basicConfig(
+        filename=log_path,
+        level=log_level,
+        format="[%(asctime)s] %(levelname).1s %(message)s",
+        datefmt="%Y.%m.%d %H:%M:%S",
+    )
+
+
+def main(config=None):
+    appctxt = AppContext()
+    exit_code = appctxt.run()
     sys.exit(exit_code)
+
+
+if __name__ == "__main__":
+    setup_logger(log_level=logging.DEBUG)
+    try:
+        main()
+    except Exception as e:
+        logging.exception("Exception has been raised.")

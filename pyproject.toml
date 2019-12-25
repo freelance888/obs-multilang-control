@@ -6,10 +6,12 @@ authors = ["Serhii Khalymon <sergiykhalimon@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.6"
-fbs = "^0.8.4"
+fbs = {git = "https://github.com/Infernion/fbs"}
 pyqt5 = "5.9.2"
 macholib = "^1.11"
 sip = "4.19.8"
+obs-websocket-py = "^0.4"
+enaml = "^0.10.4"
 
 [tool.poetry.dev-dependencies]
 

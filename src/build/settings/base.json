@@ -1,0 +1,17 @@
+{
+    "app_name": "obs-control",
+    "author": "Serhii",
+    "main_module": "src/main/python/main.py",
+    "version": "0.1.0",
+    "hidden_imports": [
+        "enaml",
+        "enaml.core.compiler_helpers",
+        "enaml.core.compiler_nodes",
+        "enaml.core.enamldef_meta",
+        "enaml.core.template",
+        "enaml.widgets.api",
+        "enaml.widgets.form",
+        "enaml.layout.api",
+        "enaml.core.include"
+    ]
+}
