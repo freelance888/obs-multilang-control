@@ -8,6 +8,7 @@ from atom.scalars import Unicode, Float
 from obswebsocket import obsws, requests
 
 HOST = "0.0.0.0"
+BASE_LANG = "Ru"
 
 
 def on_event(msg):
@@ -91,9 +92,9 @@ class LanguageSwitcherModel(Atom):
     obs_instances = List(ObsInstanceModel)
 
     @classmethod
-    def create(cls, *obs_instances):
+    def create(cls, *obs_instances, base_lang=BASE_LANG):
         instance = cls(current_lang_code="", obs_instances=list(obs_instances))
-        instance.switch_to_lang("Ru")
+        instance.switch_to_lang(base_lang)
         return instance
 
     def switch_to_lang(self, next_lang_code):
