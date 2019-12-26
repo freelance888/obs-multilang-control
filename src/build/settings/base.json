@@ -12,6 +12,6 @@
         "enaml.widgets.api",
         "enaml.widgets.form",
         "enaml.layout.api",
-        "enaml.core.include"
+        "enaml.core.api"
     ]
 }

@@ -1,13 +1,14 @@
 import logging
 
+from atom.containerlist import ContainerList
 from atom.dict import Dict
 from atom.atom import Atom
 from atom.instance import Instance
-from atom.list import List
-from atom.scalars import Unicode, Float
+from atom.scalars import Unicode, Bool
 from obswebsocket import obsws, requests
 
-HOST = "0.0.0.0"
+DEFAULT_HOST = "0.0.0.0"
+DEFAULT_PORT = "4444"
 BASE_LANG = "Ru"
 
 
@@ -18,7 +19,11 @@ def on_event(msg):
 def _create_connection(host, port, password=None):
     ws = obsws(host, port, password)
     ws.register(on_event)
-    ws.connect()
+    try:
+        ws.connect()
+    except Exception as e:
+        logging.exception(e)
+        return None
     return ws
 
 
@@ -45,26 +50,9 @@ class ObsInstanceModel(Atom):
     scene_name = Unicode()
     origin_source = Dict()
     trans_source = Dict()
-
-    @classmethod
-    def create(cls, host=HOST, port=4444):
-        ws = _create_connection(host, port)
-        lang_code = _current_obs_lang(ws)
-        scene = _current_obs_scene(ws)
-        origin_source = trans_source = None
-        for source in scene["sources"]:
-            if source["name"] == "Origin VA":
-                origin_source = source
-            elif source["name"] == f"{lang_code} Translation":
-                trans_source = source
-
-        return cls(
-            ws=ws,
-            lang_code=lang_code,
-            scene_name=scene["name"],
-            origin_source=origin_source,
-            trans_source=trans_source,
-        )
+    host = Unicode(default=DEFAULT_HOST)
+    port = Unicode(default=DEFAULT_PORT)
+    is_connected = Bool()
 
     def refresh_sources(self):
         self.ws.call(
@@ -86,16 +74,59 @@ class ObsInstanceModel(Atom):
         trans_res = self.ws.call(requests.SetVolume(self.trans_source["name"], 1.0))
         self.trans_source["volume"] = trans_res.dataout["volume"]
 
+    def connect(self, host=None, port=None):
+        if self.is_connected:
+            return self.is_connected
+        if host and port:
+            self.host = host
+            self.port = port
+        ws = _create_connection(self.host, self.port)
+        if ws is None:
+            return self.is_connected
+        self.ws = ws
+        self.lang_code = _current_obs_lang(self.ws)
+        scene = _current_obs_scene(self.ws)
+        for source in scene["sources"]:
+            if source["name"] == "Origin VA":
+                self.origin_source = source
+            elif source["name"] == f"{self.lang_code} Translation":
+                self.trans_source = source
+        self.scene_name = scene["name"]
+        self.is_connected = True
+        return self.is_connected
 
-class LanguageSwitcherModel(Atom):
+    def disconnect(self):
+        if not self.is_connected:
+            return self.is_connected
+        self.ws.disconnect()
+        self.is_connected = False
+        return self.is_connected
+
+
+class ObsManagerModel(Atom):
     current_lang_code = Unicode()
-    obs_instances = List(ObsInstanceModel)
+    obs_instances = ContainerList(default=[ObsInstanceModel()])
 
-    @classmethod
-    def create(cls, *obs_instances, base_lang=BASE_LANG):
-        instance = cls(current_lang_code="", obs_instances=list(obs_instances))
-        instance.switch_to_lang(base_lang)
-        return instance
+    def add_obs_instance(self, obs_or_host=None, port=None):
+        if isinstance(obs_or_host, ObsInstanceModel):
+            obs = obs_or_host
+        elif obs_or_host and port:
+            obs = ObsInstanceModel(host=obs_or_host, port=port)
+        else:
+            obs = ObsInstanceModel()
+        if obs.port != DEFAULT_PORT and obs.port in [
+            o.port for o in self.obs_instances
+        ]:
+            logging.info(f"OBS {obs.port} already added")
+            return obs
+        self.obs_instances.append(obs)
+        return obs
+
+    def __getitem__(self, item: str):
+        for obs in self.obs_instances:
+            if item == obs.port:
+                return obs
+        raise KeyError(f"{item} isn't present in obs instances")
 
     def switch_to_lang(self, next_lang_code):
         if next_lang_code == self.current_lang_code:

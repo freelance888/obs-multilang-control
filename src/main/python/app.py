@@ -7,7 +7,7 @@ from fbs_runtime.application_context import cached_property
 from fbs_runtime.application_context.PyQt5 import ApplicationContext
 from fbs_runtime.platform import is_windows
 from enaml.qt.qt_application import QtApplication
-from models import ObsInstanceModel, LanguageSwitcherModel
+from models import ObsManagerModel
 
 
 class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
@@ -15,7 +15,8 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
         self.modem_info_view = modem_info_view
 
         QtWidgets.QSystemTrayIcon.__init__(self, parent)
-
+        if icon:
+            self.setIcon(icon)
         menu = QtWidgets.QMenu(parent)
 
         self.show_action = menu.addAction("Show control")
@@ -71,12 +72,10 @@ class AppContext(ApplicationContext):
 
     def run(self):
         with enaml.imports():
-            from views.lang_switcher import LangSwitcherView
+            from views.main import MainWindowView
 
-        lang_switcher = LanguageSwitcherModel.create(ObsInstanceModel.create(port=4444),
-                                                     ObsInstanceModel.create(port=4445))
-
-        view = LangSwitcherView(lang_switcher=lang_switcher)
+        obs_manager = ObsManagerModel()
+        view = MainWindowView(obs_manager=obs_manager)
         view.show()
         parent = QtWidgets.QWidget()
         tray_icon = SystemTrayIcon(self.app_icon, parent, view)

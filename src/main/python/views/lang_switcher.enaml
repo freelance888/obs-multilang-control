@@ -1,43 +1,25 @@
-from enaml.layout.api import vbox, hbox, grid
-from enaml.core.include import Include
+from enaml.core.api import Include
 from enaml.widgets.api import (
-    Window, Label, Field, Form, Container, Timer, PushButton, GroupBox
+    DockPane, Label, Field, Container, PushButton
 )
 
-def gen_constraints(comps):
-    return [grid(comps)]
-
-
 enamldef LangButton(PushButton):
-    attr lang_switcher
+    attr obs_manager
     attr lang_code
     text = lang_code
     clicked ::
-        lang_switcher.switch_to_lang(lang_code)
+        obs_manager.switch_to_lang(lang_code)
 
 
-enamldef LangSwitcherView(Window): main:
-    initial_size = (400, 200)
-    title = "Lang switcher"
-    attr lang_switcher
+enamldef LangSwitcher(DockPane):
+    title = "Language Switcher"
 
+    attr obs_manager
 
     Container:
-        padding = 10
-        constraints = [
-            vbox(
-                cur_lang,
-                select_lang
-                )
-        ]
         Label: cur_lang:
-            text << "Current lang: {}".format(lang_switcher.current_lang_code)
-
-        Container: select_lang:
-            constraints << gen_constraints(
-                        inc.objects
-                    )
-            Include: inc:
-                objects = [LangButton(lang_code=obs.lang_code, lang_switcher=lang_switcher)
-                           for obs in lang_switcher.obs_instances]
+            text << "Current lang: {}".format(obs_manager.current_lang_code)
+        Include: inc:
+            objects << [LangButton(lang_code=obs.lang_code, obs_manager=obs_manager)
+                       for obs in obs_manager.obs_instances]
 

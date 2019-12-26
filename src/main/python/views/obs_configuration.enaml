@@ -1,0 +1,57 @@
+from enaml.core.api import Looper
+from enaml.layout.api import vbox, hbox, align
+from enaml.core.include import Include
+from enaml.stdlib.fields import IntField
+from enaml.widgets.api import (
+    DockPane, Container, Label, Field, Form, PushButton, VGroup
+)
+
+
+enamldef ObsConnection(Container):
+    attr obs
+    attr field_enabled: bool = True
+
+    padding = 0
+    constraints = [
+        hbox(lang_label, host_field, port_field, add_button),
+        lang_label.width == 15,
+        host_field.width == 80,
+        port_field.width == 45,
+        add_button.width == 65
+    ]
+    Label: lang_label:
+        text << obs.lang_code
+    Field: host_field:
+        placeholder = "Host"
+        text := obs.host
+        enabled << True if not obs.is_connected else False
+    IntField: port_field:
+        placeholder = "Port"
+        text := obs.port
+        enabled << True if not obs.is_connected else False
+    PushButton: add_button:
+        text << "Connect" if not obs.is_connected else "Disc.."
+        checkable = True
+        clicked ::
+            if not obs.is_connected:
+                obs.connect()
+            else:
+                obs.disconnect()
+
+
+enamldef ObsConfiguration(DockPane):
+    attr obs_manager
+    title = "OBS Connection Configuration"
+    Form:
+        padding = 5
+        VGroup:
+            Include: inc:
+                objects = [
+                    ObsConnection(obs=obs)
+                    for obs in obs_manager.obs_instances
+                ]
+            PushButton:
+                text = "Add OBS connection"
+                clicked ::
+                    items = [ObsConnection(obs=obs_manager.add_obs_instance())]
+                    inc.objects.extend(items)

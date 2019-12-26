@@ -1,0 +1,27 @@
+from enaml.layout.api import vbox, hbox, grid
+from enaml.core.api import Include
+from enaml.widgets.api import (
+    MainWindow, Label, PushButton
+)
+
+from .obs_configuration import ObsConfiguration
+from .lang_switcher import LangSwitcher
+
+
+def gen_constraints(comps):
+    return [grid(comps, column_align='width', row_align='v_center')]
+
+
+enamldef MainWindowView(MainWindow): window:
+    attr obs_manager
+
+    initial_size = (400, 400)
+    title = "Lang switcher"
+
+    Include:
+        objects = [
+            ObsConfiguration(window, obs_manager=obs_manager),
+            LangSwitcher(obs_manager=obs_manager)
+        ]
+
+
