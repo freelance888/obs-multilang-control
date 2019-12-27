@@ -160,6 +160,25 @@ class ObsInstanceModel(Atom):
         self.is_connected = False
         return self.is_connected
 
+    def __setstate__(self, state):
+        self.host = state["host"]
+        self.port = state["port"]
+        self.origin_volume_level_on_origin = state["origin_volume_level_on_origin"]
+        self.origin_volume_level_on_trans = state["origin_volume_level_on_trans"]
+        self.trans_volume_level_on_trans = state["trans_volume_level_on_trans"]
+        if not self.is_connected and state["is_connected"]:
+            self.connect()
+
+    def __getstate__(self):
+        return dict(
+            host=self.host,
+            port=self.port,
+            is_connected=self.is_connected,
+            origin_volume_level_on_origin=self.origin_volume_level_on_origin,
+            origin_volume_level_on_trans=self.origin_volume_level_on_trans,
+            trans_volume_level_on_trans=self.trans_volume_level_on_trans,
+        )
+
 
 class ObsManagerModel(Atom):
     current_lang_code = Unicode()
@@ -188,11 +207,19 @@ class ObsManagerModel(Atom):
         obs = self.obs_instances.pop()
         obs.disconnect()
 
-    def __getitem__(self, item: str):
-        for obs in self.obs_instances:
-            if item == obs.port:
-                return obs
-        raise KeyError(f"{item} isn't present in obs instances")
+    def __getstate__(self):
+        return dict(
+            current_lang_code=self.current_lang_code,
+            obs_instances=[o.__getstate__() for o in self.obs_instances],
+        )
+
+    def __setstate__(self, state):
+        self.current_lang_code = state["current_lang_code"]
+        self.obs_instances.clear()
+        for obs_data in state["obs_instances"]:
+            obs = ObsInstanceModel()
+            obs.__setstate__(obs_data)
+            self.add_obs_instance(obs)
 
     def switch_to_lang(self, next_lang_code):
         if next_lang_code == self.current_lang_code:
@@ -212,27 +239,13 @@ class ObsManagerModel(Atom):
         return next_obs
 
     def save_state(self):
-        data = dict(
-            current_lang_code=self.current_lang_code,
-            obs_instances=[
-                dict(host=o.host, port=o.port, is_connected=o.is_connected)
-                for o in self.obs_instances
-            ],
-        )
         with open(self.state_path, "w") as f:
-            json.dump(data, f)
-        self.status = "State saved!"
+            json.dump(self.__getstate__(), f)
 
     def restore_state(self):
         with open(self.state_path, "r") as f:
             data = json.load(f)
-
-        self.current_lang_code = data["current_lang_code"]
-        self.obs_instances.clear()
-        for con in data["obs_instances"]:
-            obs = self.add_obs_instance(con["host"], con["port"])
-            if con["is_connected"]:
-                obs.connect()
+            self.__setstate__(data)
 
     def connect_all(self):
         for o in self.obs_instances:
