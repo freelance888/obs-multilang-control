@@ -1,5 +1,6 @@
 from enaml.layout.api import vbox, hbox, grid
 from enaml.core.api import Include
+from enaml.stdlib.message_box import question
 from enaml.widgets.api import (
     MainWindow, Label, PushButton, VGroup, Separator, StatusBar, StatusItem
 )
@@ -41,6 +42,23 @@ enamldef MainWindowView(MainWindow): window:
             clicked ::
                 obs_manager.disconnect_all()
                 obs_manager.status = "Disconnected from all OBS!"
+        Separator:
+            pass
+        PushButton:
+            text = "Start streams"
+            clicked ::
+                b = question(self, "Start stream", "Do you want to start stream?")
+                if b.was_clicked and b.action == 'accept':
+                    obs_manager.start_streams()
+                obs_manager.status = "Streams started!"
+        PushButton:
+            text = "Stop streams"
+            clicked ::
+                b = question(self, "Stop stream", "Do you want to stop stream?")
+                if b.was_clicked and b.action == 'accept':
+                    obs_manager.stop_streams()
+                obs_manager.status = "Streams stopped!"
+
     Include:
         objects = [
             ObsConfiguration(window, obs_manager=obs_manager),

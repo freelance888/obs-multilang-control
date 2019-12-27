@@ -11,7 +11,7 @@ enamldef ObsConnection(Container):
     attr obs
     attr field_enabled: bool = True
 
-    padding = 0
+    padding = 2
     constraints = [
         hbox(lang_label, host_field, port_field, add_button),
         lang_label.width == 15,
@@ -19,6 +19,7 @@ enamldef ObsConnection(Container):
         port_field.width == 55,
         add_button.width == 65
     ]
+    background << "green" if obs.is_stream_started else ""
     Label: lang_label:
         text << obs.lang_code
     Field: host_field:
@@ -65,7 +66,6 @@ enamldef ObsConfiguration(DockPane):
                 PushButton:
                     text = "Remove"
                     clicked ::
-                        con = inc.objects.pop()
-                        obs_manager.remove_obs_instance(con.obs)
+                        obs_manager.pop_obs_instance()
                         obs_manager.status = "Last configuration removed!"
 

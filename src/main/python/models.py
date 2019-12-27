@@ -27,7 +27,7 @@ def _current_obs_lang(ws):
     profile_name = ws.call(requests.GetCurrentProfile()).datain["profile-name"]
     scene_source_name = ws.call(requests.GetCurrentSceneCollection()).datain["sc-name"]
     if profile_name != scene_source_name:
-        raise ValueError("`Profile` name should be exactly same as `Scene collection`")
+        ws.call(requests.SetCurrentSceneCollection(profile_name))
     return profile_name
 
 
@@ -38,6 +38,11 @@ def _current_obs_scene(ws):
     if scenes[0]["name"].lower() != "scene":
         raise ValueError("Scene should have name `Scene`")
     return scenes[0]
+
+
+def _current_obs_stream_settings(ws):
+    settings = ws.call(requests.GetStreamSettings())
+    return settings.datain
 
 
 class ObsInstanceModel(Atom):
@@ -52,6 +57,10 @@ class ObsInstanceModel(Atom):
     is_origin_audio = Bool()
     switch_triggered = Bool()
 
+    is_stream_started = Bool()
+    # stream_server_url = Unicode()
+    # stream_key = Unicode()
+    # stream_settings = Dict(dict(type='rtmp_common', save=True, settings=dict(ser)))
     origin_volume_level_on_origin = Float(1.0)
 
     origin_volume_level_on_trans = Float(0.20)
@@ -83,7 +92,28 @@ class ObsInstanceModel(Atom):
         self._change_volume(self.trans_source["name"], self.trans_volume_level_on_trans)
         self.is_origin_audio = False
 
+    def start_stream(self):
+        self.ws.call(requests.StartStreaming())
+
+    def stop_stream(self):
+        self.ws.call(requests.StopStreaming())
+
     def connect(self, host=None, port=None):
+        if self.is_connected:
+            return True
+        if host and port:
+            self.host = host
+            self.port = port
+        ws = _create_connection(self.host, self.port)
+        if ws is None:
+            return False
+        self.ws = ws
+        self._populate_data()
+        self._register_callbacks()
+        self.is_connected = True
+        return self.is_connected
+
+    def _register_callbacks(self):
         def handle_volume(e: events.SourceVolumeChanged):
             """Save volume level changed from OBS"""
             if self.switch_triggered:
@@ -98,19 +128,15 @@ class ObsInstanceModel(Atom):
                 if not self.is_origin_audio:
                     self.trans_volume_level_on_trans = e.getVolume()
 
-        if self.is_connected:
-            return True
-        if host and port:
-            self.host = host
-            self.port = port
-        ws = _create_connection(self.host, self.port)
-        if ws is None:
-            return False
-        ws.register(handle_volume, events.SourceVolumeChanged)
-        self.ws = ws
-        self._populate_data()
-        self.is_connected = True
-        return self.is_connected
+        def handle_streaming_status(e: events.StreamStatus):
+            if isinstance(e, events.StreamStopped):
+                self.is_stream_started = False
+                return
+            self.is_stream_started = e.getStreaming()
+
+        self.ws.register(handle_volume, events.SourceVolumeChanged)
+        self.ws.register(handle_streaming_status, events.StreamStatus)
+        self.ws.register(handle_streaming_status, events.StreamStopped)
 
     def _populate_data(self):
         self.lang_code = _current_obs_lang(self.ws)
@@ -121,6 +147,11 @@ class ObsInstanceModel(Atom):
             elif source["name"] == f"{self.lang_code} Translation":
                 self.trans_source = source
         self.scene_name = scene["name"]
+
+    # settings = _current_obs_stream_settings(self.ws)
+    # if settings["type"] == "rtmp_common":
+    #     self.stream_key = settings["settings"]["key"]
+    #     self.stream_server_url = settings["settings"]["server"]
 
     def disconnect(self):
         if not self.is_connected:
@@ -153,11 +184,8 @@ class ObsManagerModel(Atom):
         self.status = f"OBS configuration with address {obs.host}:{obs.port} created!"
         return obs
 
-    def remove_obs_instance(self, obs):
-        for i, lang_code in enumerate(o.lang_code for o in self.obs_instances):
-            if obs.lang_code == lang_code:
-                obs = self.obs_instances.pop(i)
-                break
+    def pop_obs_instance(self):
+        obs = self.obs_instances.pop()
         obs.disconnect()
 
     def __getitem__(self, item: str):
@@ -213,3 +241,11 @@ class ObsManagerModel(Atom):
     def disconnect_all(self):
         for o in self.obs_instances:
             o.connect()
+
+    def start_streams(self):
+        for o in self.obs_instances:
+            o.start_stream()
+
+    def stop_streams(self):
+        for o in self.obs_instances:
+            o.stop_stream()
