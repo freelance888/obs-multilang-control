@@ -134,9 +134,14 @@ class ObsInstanceModel(Atom):
                 return
             self.is_stream_started = e.getStreaming()
 
+        def handle_exiting(e: events.Exiting):
+            self.is_connected = False
+            self.is_stream_started = False
+
         self.ws.register(handle_volume, events.SourceVolumeChanged)
         self.ws.register(handle_streaming_status, events.StreamStatus)
         self.ws.register(handle_streaming_status, events.StreamStopped)
+        self.ws.register(handle_exiting, events.Exiting)
 
     def _populate_data(self):
         self.lang_code = _current_obs_lang(self.ws)
@@ -253,7 +258,7 @@ class ObsManagerModel(Atom):
 
     def disconnect_all(self):
         for o in self.obs_instances:
-            o.connect()
+            o.disconnect()
 
     def start_streams(self):
         for o in self.obs_instances:
