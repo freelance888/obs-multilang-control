@@ -3,7 +3,7 @@ from enaml.layout.api import vbox, hbox, align
 from enaml.core.include import Include
 #from enaml.stdlib.fields import IntField
 from enaml.widgets.api import (
-    DockPane, Container, Label, Field, Form, PushButton, VGroup, SpinBox
+    DockPane, Container, Label, Field, Form, PushButton, Separator, VGroup, HGroup, SpinBox
 )
 
 
@@ -51,8 +51,17 @@ enamldef ObsConfiguration(DockPane):
                     ObsConnection(obs=obs)
                     for obs in obs_manager.obs_instances
                 ]
-            PushButton:
-                text = "Add OBS connection"
-                clicked ::
-                    items = [ObsConnection(obs=obs_manager.add_obs_instance())]
-                    inc.objects.extend(items)
+            Separator:
+                 pass
+            HGroup:
+                PushButton:
+                    text = "Add"
+                    clicked ::
+                        items = [ObsConnection(obs=obs_manager.add_obs_instance())]
+                        inc.objects.extend(items)
+                PushButton:
+                    text = "Remove"
+                    clicked ::
+                        con = inc.objects.pop()
+                        obs_manager.remove_obs_instance(con.obs)
+

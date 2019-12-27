@@ -122,6 +122,13 @@ class ObsManagerModel(Atom):
         self.obs_instances.append(obs)
         return obs
 
+    def remove_obs_instance(self, obs):
+        for i, lang_code in enumerate(o.lang_code for o in self.obs_instances):
+            if obs.lang_code == lang_code:
+                obs = self.obs_instances.pop(i)
+                break
+        obs.disconnect()
+
     def __getitem__(self, item: str):
         for obs in self.obs_instances:
             if item == obs.port:
