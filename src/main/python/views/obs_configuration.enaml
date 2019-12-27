@@ -19,7 +19,7 @@ enamldef ObsConnection(Container):
         port_field.width == 55,
         add_button.width == 65
     ]
-    background << "green" if obs.is_stream_started else ""
+    background << "green" if obs.is_connected and obs.is_stream_started else ""
     Label: lang_label:
         text << obs.lang_code
     Field: host_field:
