@@ -5,21 +5,16 @@ from atom.containerlist import ContainerList
 from atom.dict import Dict
 from atom.atom import Atom
 from atom.instance import Instance
-from atom.scalars import Unicode, Bool, Int
-from obswebsocket import obsws, requests
+from atom.scalars import Unicode, Bool, Int, Float
+from obswebsocket import obsws, requests, events
 
 DEFAULT_HOST = "0.0.0.0"
 DEFAULT_PORT = 4444
 BASE_LANG = "Ru"
 
 
-def on_event(msg):
-    print(msg)
-
-
 def _create_connection(host, port, password=None):
     ws = obsws(host, port, password)
-    ws.register(on_event)
     try:
         ws.connect()
     except Exception as e:
@@ -54,6 +49,13 @@ class ObsInstanceModel(Atom):
     host = Unicode(default=DEFAULT_HOST)
     port = Int(default=DEFAULT_PORT)
     is_connected = Bool()
+    is_origin_audio = Bool()
+    switch_triggered = Bool()
+
+    origin_volume_level_on_origin = Float(1.0)
+
+    origin_volume_level_on_trans = Float(0.20)
+    trans_volume_level_on_trans = Float(1.0)
 
     def refresh_sources(self):
         self.ws.call(
@@ -63,28 +65,54 @@ class ObsInstanceModel(Atom):
             requests.SetSourceSettings(self.trans_source["name"], self.trans_source)
         )
 
+    def _change_volume(self, name, volume):
+        self.switch_triggered = True
+        self.ws.call(requests.SetVolume(name, volume))
+
     def switch_to_origin(self):
-        origin_res = self.ws.call(requests.SetVolume(self.origin_source["name"], 1.0))
-        self.origin_source["volume"] = origin_res.dataout["volume"]
-        trans_res = self.ws.call(requests.SetVolume(self.trans_source["name"], 0.0))
-        self.trans_source["volume"] = trans_res.dataout["volume"]
+        self._change_volume(
+            self.origin_source["name"], self.origin_volume_level_on_origin
+        )
+        self._change_volume(self.trans_source["name"], 0.0)
+        self.is_origin_audio = True
 
     def switch_to_translation(self):
-        origin_res = self.ws.call(requests.SetVolume(self.origin_source["name"], 0.20))
-        self.origin_source["volume"] = origin_res.dataout["volume"]
-        trans_res = self.ws.call(requests.SetVolume(self.trans_source["name"], 1.0))
-        self.trans_source["volume"] = trans_res.dataout["volume"]
+        self._change_volume(
+            self.origin_source["name"], self.origin_volume_level_on_trans
+        )
+        self._change_volume(self.trans_source["name"], self.trans_volume_level_on_trans)
+        self.is_origin_audio = False
 
     def connect(self, host=None, port=None):
+        def handle_volume(e: events.SourceVolumeChanged):
+            """Save volume level changed from OBS"""
+            if self.switch_triggered:
+                self.switch_triggered = False
+                return
+            if e.getSourcename() == self.origin_source["name"]:
+                if self.is_origin_audio:
+                    self.origin_volume_level_on_origin = e.getVolume()
+                else:
+                    self.origin_volume_level_on_trans = e.getVolume()
+            elif e.getSourcename() == self.trans_source["name"]:
+                if not self.is_origin_audio:
+                    self.trans_volume_level_on_trans = e.getVolume()
+
         if self.is_connected:
-            return self.is_connected
+            return True
         if host and port:
             self.host = host
             self.port = port
         ws = _create_connection(self.host, self.port)
         if ws is None:
-            return self.is_connected
+            return False
+        ws.register(handle_volume, events.SourceVolumeChanged)
         self.ws = ws
+        self._populate_data()
+        self.is_connected = True
+        return self.is_connected
+
+    def _populate_data(self):
         self.lang_code = _current_obs_lang(self.ws)
         scene = _current_obs_scene(self.ws)
         for source in scene["sources"]:
@@ -93,8 +121,6 @@ class ObsInstanceModel(Atom):
             elif source["name"] == f"{self.lang_code} Translation":
                 self.trans_source = source
         self.scene_name = scene["name"]
-        self.is_connected = True
-        return self.is_connected
 
     def disconnect(self):
         if not self.is_connected:

@@ -29,7 +29,7 @@ def main():
 
 if __name__ == "__main__":
     log_path = pathlib.Path(tempfile.gettempdir()) / "obs-control.log"
-    setup_logger(log_path=log_path, log_level=logging.DEBUG)
+    setup_logger(log_path=None, log_level=logging.DEBUG)
     try:
         main()
     except Exception as e:
