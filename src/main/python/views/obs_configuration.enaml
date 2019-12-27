@@ -43,6 +43,8 @@ enamldef ObsConnection(Container):
 enamldef ObsConfiguration(DockPane):
     attr obs_manager
     title = "OBS Connection Configuration"
+    closable = False
+
     Form:
         padding = 5
         VGroup:

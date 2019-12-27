@@ -16,8 +16,8 @@ enamldef LangButton(PushButton):
 
 enamldef LangSwitcher(DockPane):
     title = "Language Switcher"
-
     attr obs_manager
+    closable = False
 
     Container:
         Label: cur_lang:
