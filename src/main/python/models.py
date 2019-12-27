@@ -108,6 +108,7 @@ class ObsManagerModel(Atom):
     current_lang_code = Unicode()
     obs_instances = ContainerList(default=[ObsInstanceModel()])
     state_path = Unicode()
+    status = Unicode()
 
     def add_obs_instance(self, obs_or_host=None, port=None):
         if isinstance(obs_or_host, ObsInstanceModel):
@@ -119,9 +120,11 @@ class ObsManagerModel(Atom):
         if obs.port != DEFAULT_PORT and obs.port in [
             o.port for o in self.obs_instances
         ]:
-            logging.info(f"OBS {obs.port} already added")
+            self.status = f"OBS {obs.port} already added"
+            logging.info(self.status)
             return obs
         self.obs_instances.append(obs)
+        self.status = f"OBS configuration with address {obs.host}:{obs.port} created!"
         return obs
 
     def remove_obs_instance(self, obs):
@@ -150,6 +153,7 @@ class ObsManagerModel(Atom):
             elif obs.lang_code == self.current_lang_code:
                 obs.switch_to_translation()
                 logging.info(f"OBS {obs.lang_code} was switched to TRANSLATION sound")
+        self.status = f"Switched from {self.current_lang_code} to {next_lang_code}!"
         self.current_lang_code = next_lang_code
         return next_obs
 
@@ -163,6 +167,7 @@ class ObsManagerModel(Atom):
         )
         with open(self.state_path, "w") as f:
             json.dump(data, f)
+        self.status = "State saved!"
 
     def restore_state(self):
         with open(self.state_path, "r") as f:
@@ -174,3 +179,11 @@ class ObsManagerModel(Atom):
             obs = self.add_obs_instance(con["host"], con["port"])
             if con["is_connected"]:
                 obs.connect()
+
+    def connect_all(self):
+        for o in self.obs_instances:
+            o.connect()
+
+    def disconnect_all(self):
+        for o in self.obs_instances:
+            o.connect()

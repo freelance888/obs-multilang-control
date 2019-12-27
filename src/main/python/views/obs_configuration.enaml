@@ -61,9 +61,11 @@ enamldef ObsConfiguration(DockPane):
                     text = "Add"
                     clicked ::
                         obs_manager.add_obs_instance()
+                        obs_manager.status = "New connection configuration added!"
                 PushButton:
                     text = "Remove"
                     clicked ::
                         con = inc.objects.pop()
                         obs_manager.remove_obs_instance(con.obs)
+                        obs_manager.status = "Last configuration removed!"
 
