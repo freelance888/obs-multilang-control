@@ -17,7 +17,7 @@ enamldef MainWindowView(MainWindow): window:
     attr obs_manager
 
     initial_size = (400, 400)
-    title = "Lang switcher"
+    title = "OBS Multi lang control"
 
     VGroup: menu:
         PushButton:
