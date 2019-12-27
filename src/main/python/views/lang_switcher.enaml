@@ -23,5 +23,5 @@ enamldef LangSwitcher(DockPane):
             text << "Current lang: {}".format(obs_manager.current_lang_code)
         Include: inc:
             objects << [LangButton(lang_code=obs.lang_code, obs_manager=obs_manager)
-                       for obs in obs_manager.obs_instances]
+                       for obs in obs_manager.obs_instances if obs.is_connected]
 
