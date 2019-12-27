@@ -1,7 +1,7 @@
 import logging
 import pathlib
 import sys
-
+import tempfile
 
 from app import AppContext
 
@@ -9,9 +9,9 @@ from app import AppContext
 def setup_logger(log_path: str = None, log_level=logging.INFO):
     if log_path is not None:
         log_path = pathlib.Path(log_path)
-        if not log_path.is_dir():
-            log_path.mkdir()
-        log_path = log_path / "obs-control.log"
+        if not log_path.parent.is_dir():
+            log_path.parent.mkdir()
+        print(f"Log file is here {log_path}")
 
     logging.basicConfig(
         filename=log_path,
@@ -21,15 +21,17 @@ def setup_logger(log_path: str = None, log_level=logging.INFO):
     )
 
 
-def main(config=None):
+def main():
     appctxt = AppContext()
     exit_code = appctxt.run()
     sys.exit(exit_code)
 
 
 if __name__ == "__main__":
-    setup_logger(log_level=logging.DEBUG)
+    log_path = pathlib.Path(tempfile.gettempdir()) / "obs-control.log"
+    setup_logger(log_path=log_path, log_level=logging.DEBUG)
     try:
         main()
     except Exception as e:
-        logging.exception("Exception has been raised.")
+        logging.exception(e)
+        logging.error(f"Detailed logs could be found here: {log_path}")
