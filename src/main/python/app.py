@@ -11,15 +11,15 @@ from models import ObsManagerModel
 
 
 class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
-    def __init__(self, icon, parent, modem_info_view):
-        self.modem_info_view = modem_info_view
+    def __init__(self, icon, parent, view):
+        self.view = view
 
         QtWidgets.QSystemTrayIcon.__init__(self, parent)
         if icon:
             self.setIcon(icon)
         menu = QtWidgets.QMenu(parent)
 
-        self.show_action = menu.addAction("Show control")
+        self.show_action = menu.addAction(self._show_text)
 
         sparator = menu.addSeparator()
         self.exit_action = menu.addAction("Exit")
@@ -31,14 +31,20 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
     def exit(self):
         QtCore.QCoreApplication.exit()
 
+    @property
+    def _show_text(self):
+        if not self.view.visible:
+            return "Show OBS Control"
+        else:
+            return "Hide OBS Control"
+
     def show_hide(self):
         logging.debug("Show\Hide action clicked")
-        if self.modem_info_view.visible:
-            self.modem_info_view.hide()
-            self.show_action.setText("Show control")
+        if self.view.visible:
+            self.view.hide()
         else:
-            self.modem_info_view.show()
-            self.show_action.setText("Hide control")
+            self.view.show()
+        self.show_action.setText(self._show_text)
 
 
 class CustomQtApplication(QtApplication):
