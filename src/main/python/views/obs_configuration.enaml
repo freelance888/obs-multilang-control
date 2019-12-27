@@ -33,6 +33,7 @@ enamldef ObsConnection(Container):
     PushButton: add_button:
         text << "Connect" if not obs.is_connected else "Disc.."
         checkable = True
+        checked << obs.is_connected
         clicked ::
             if not obs.is_connected:
                 obs.connect()
@@ -49,7 +50,7 @@ enamldef ObsConfiguration(DockPane):
         padding = 5
         VGroup:
             Include: inc:
-                objects = [
+                objects << [
                     ObsConnection(obs=obs)
                     for obs in obs_manager.obs_instances
                 ]
@@ -59,8 +60,7 @@ enamldef ObsConfiguration(DockPane):
                 PushButton:
                     text = "Add"
                     clicked ::
-                        items = [ObsConnection(obs=obs_manager.add_obs_instance())]
-                        inc.objects.extend(items)
+                        obs_manager.add_obs_instance()
                 PushButton:
                     text = "Remove"
                     clicked ::

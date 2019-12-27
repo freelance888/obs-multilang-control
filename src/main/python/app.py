@@ -74,7 +74,9 @@ class AppContext(ApplicationContext):
         with enaml.imports():
             from views.main import MainWindowView
 
-        obs_manager = ObsManagerModel()
+        state_path = self.get_resource("state.json")
+        obs_manager = ObsManagerModel(state_path=state_path)
+
         view = MainWindowView(obs_manager=obs_manager)
         view.show()
         parent = QtWidgets.QWidget()

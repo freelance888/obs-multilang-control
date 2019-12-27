@@ -1,7 +1,7 @@
 from enaml.layout.api import vbox, hbox, grid
 from enaml.core.api import Include
 from enaml.widgets.api import (
-    MainWindow, Label, PushButton
+    MainWindow, Label, PushButton, VGroup, Separator
 )
 
 from .obs_configuration import ObsConfiguration
@@ -18,6 +18,27 @@ enamldef MainWindowView(MainWindow): window:
     initial_size = (400, 400)
     title = "Lang switcher"
 
+    VGroup: menu:
+        PushButton:
+            text = "Save state"
+            clicked ::
+                obs_manager.save_state()
+        PushButton:
+            text = "Restore state"
+            clicked ::
+                obs_manager.restore_state()
+        Separator:
+            pass
+        PushButton:
+            text = "Connect all"
+            clicked ::
+                for o in obs_manager.obs_instances:
+                    o.connect()
+        PushButton:
+            text = "Disconnect all"
+            clicked ::
+                for o in obs_manager.obs_instances:
+                    o.disconnect()
     Include:
         objects = [
             ObsConfiguration(window, obs_manager=obs_manager),

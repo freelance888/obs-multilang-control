@@ -1,3 +1,4 @@
+import json
 import logging
 
 from atom.containerlist import ContainerList
@@ -106,6 +107,7 @@ class ObsInstanceModel(Atom):
 class ObsManagerModel(Atom):
     current_lang_code = Unicode()
     obs_instances = ContainerList(default=[ObsInstanceModel()])
+    state_path = Unicode()
 
     def add_obs_instance(self, obs_or_host=None, port=None):
         if isinstance(obs_or_host, ObsInstanceModel):
@@ -139,11 +141,36 @@ class ObsManagerModel(Atom):
         if next_lang_code == self.current_lang_code:
             logging.info(f"Already at {next_lang_code}")
             return
+        next_obs = None
         for obs in self.obs_instances:
             if obs.lang_code == next_lang_code:
                 obs.switch_to_origin()
+                next_obs = obs
                 logging.info(f"OBS {obs.lang_code} was switched to ORIGIN sound")
             elif obs.lang_code == self.current_lang_code:
                 obs.switch_to_translation()
                 logging.info(f"OBS {obs.lang_code} was switched to TRANSLATION sound")
         self.current_lang_code = next_lang_code
+        return next_obs
+
+    def save_state(self):
+        data = dict(
+            current_lang_code=self.current_lang_code,
+            obs_instances=[
+                dict(host=o.host, port=o.port, is_connected=o.is_connected)
+                for o in self.obs_instances
+            ],
+        )
+        with open(self.state_path, "w") as f:
+            json.dump(data, f)
+
+    def restore_state(self):
+        with open(self.state_path, "r") as f:
+            data = json.load(f)
+
+        self.current_lang_code = data["current_lang_code"]
+        self.obs_instances.clear()
+        for con in data["obs_instances"]:
+            obs = self.add_obs_instance(con["host"], con["port"])
+            if con["is_connected"]:
+                obs.connect()

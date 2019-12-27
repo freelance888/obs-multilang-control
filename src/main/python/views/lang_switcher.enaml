@@ -8,10 +8,9 @@ enamldef LangButton(PushButton):
     attr lang_code
     text = lang_code
     checkable = True
-    checked = False
+    checked << True if lang_code and obs_manager.current_lang_code == lang_code else False
     clicked ::
         obs_manager.switch_to_lang(lang_code)
-        checked << obs_manager.current_lang_code == lang_code
 
 
 enamldef LangSwitcher(DockPane):
