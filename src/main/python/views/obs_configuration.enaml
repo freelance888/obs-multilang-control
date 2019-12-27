@@ -1,9 +1,9 @@
 from enaml.core.api import Looper
 from enaml.layout.api import vbox, hbox, align
 from enaml.core.include import Include
-from enaml.stdlib.fields import IntField
+#from enaml.stdlib.fields import IntField
 from enaml.widgets.api import (
-    DockPane, Container, Label, Field, Form, PushButton, VGroup
+    DockPane, Container, Label, Field, Form, PushButton, VGroup, SpinBox
 )
 
 
@@ -16,7 +16,7 @@ enamldef ObsConnection(Container):
         hbox(lang_label, host_field, port_field, add_button),
         lang_label.width == 15,
         host_field.width == 80,
-        port_field.width == 45,
+        port_field.width == 55,
         add_button.width == 65
     ]
     Label: lang_label:
@@ -25,9 +25,10 @@ enamldef ObsConnection(Container):
         placeholder = "Host"
         text := obs.host
         enabled << True if not obs.is_connected else False
-    IntField: port_field:
-        placeholder = "Port"
-        text := obs.port
+    SpinBox: port_field:
+        minimum = 4444
+        maximum = 4464
+        value := obs.port
         enabled << True if not obs.is_connected else False
     PushButton: add_button:
         text << "Connect" if not obs.is_connected else "Disc.."

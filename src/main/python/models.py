@@ -4,11 +4,11 @@ from atom.containerlist import ContainerList
 from atom.dict import Dict
 from atom.atom import Atom
 from atom.instance import Instance
-from atom.scalars import Unicode, Bool
+from atom.scalars import Unicode, Bool, Int
 from obswebsocket import obsws, requests
 
 DEFAULT_HOST = "0.0.0.0"
-DEFAULT_PORT = "4444"
+DEFAULT_PORT = 4444
 BASE_LANG = "Ru"
 
 
@@ -51,7 +51,7 @@ class ObsInstanceModel(Atom):
     origin_source = Dict()
     trans_source = Dict()
     host = Unicode(default=DEFAULT_HOST)
-    port = Unicode(default=DEFAULT_PORT)
+    port = Int(default=DEFAULT_PORT)
     is_connected = Bool()
 
     def refresh_sources(self):
