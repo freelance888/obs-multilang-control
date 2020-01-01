@@ -5,12 +5,8 @@ from enaml.widgets.api import (
     MainWindow, Label, PushButton, VGroup, Separator, StatusBar, StatusItem
 )
 
-from .obs_configuration import ObsConfiguration
+from .obs_connection import ObsConnectionManager
 from .lang_switcher import LangSwitcher
-
-
-def gen_constraints(comps):
-    return [grid(comps, column_align='width', row_align='v_center')]
 
 
 enamldef MainWindowView(MainWindow): window:
@@ -72,7 +68,7 @@ enamldef MainWindowView(MainWindow): window:
                  obs_manager.status = "Audio was unmuted!"
     Include:
         objects = [
-            ObsConfiguration(window, obs_manager=obs_manager),
+            ObsConnectionManager(window, obs_manager=obs_manager),
             LangSwitcher(obs_manager=obs_manager)
         ]
     StatusBar:
