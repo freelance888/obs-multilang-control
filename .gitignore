@@ -147,7 +147,7 @@ pip-selfcheck.json
 .idea/
 
 # FBS related
-./target/
+./target
 __enamlcache__
 
 **/.DS_Store
