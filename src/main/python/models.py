@@ -11,7 +11,6 @@ from obswebsocket import obsws, requests, events
 
 DEFAULT_HOST = "127.0.0.1"
 DEFAULT_PORT = 4444
-ORIGINAL_LANG = "Original"
 
 
 def _create_connection(host, port, password=None):
@@ -201,6 +200,8 @@ class ObsInstanceModel(Atom):
 
 
 class ObsManagerModel(Atom):
+    ORIGINAL_LANG = "Original"
+
     current_lang_code = Unicode()
     obs_instances: List[ObsInstanceModel] = ContainerList(default=[ObsInstanceModel()])
     state_path = Unicode()
@@ -247,7 +248,7 @@ class ObsManagerModel(Atom):
             return
         next_obs = None
         for obs in self.obs_instances:
-            if next_lang_code == ORIGINAL_LANG:
+            if next_lang_code == self.ORIGINAL_LANG:
                 obs.switch_to_origin()
                 continue
             if obs.lang_code == next_lang_code:
