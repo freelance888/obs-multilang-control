@@ -18,6 +18,14 @@ version = "0.4.3"
 setuptools = "*"
 
 [[package]]
+category = "dev"
+description = "Version-bump your software with a single command!"
+name = "bump2version"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+version = "0.5.11"
+
+[[package]]
 category = "main"
 description = "Declarative DSL for building rich user interfaces in Python"
 name = "enaml"
@@ -135,18 +143,6 @@ version = "1.13.0"
 
 [[package]]
 category = "main"
-description = "Validation and parsing library"
-name = "trafaret"
-optional = false
-python-versions = "*"
-version = "2.0.2"
-
-[package.extras]
-objectid = ["pymongo (>=2.4.1)"]
-rfc3339 = ["python-dateutil (>=1.5)"]
-
-[[package]]
-category = "main"
 description = "WebSocket client for Python. hybi13 is supported."
 name = "websocket-client"
 optional = false
@@ -157,7 +153,7 @@ version = "0.56.0"
 six = "*"
 
 [metadata]
-content-hash = "a877718e237e0ad36fbb265e90153293852e5c0659efcdbee5a1b7d562865563"
+content-hash = "b78c487c8131803fd5a327d77b44ff285cd31fe3323217f5c8015b9cd3115250"
 python-versions = "^3.6"
 
 [metadata.files]
@@ -194,6 +190,10 @@ atom = [
     {file = "atom-0.4.3-cp37-none-win32.whl", hash = "sha256:44381835e457b1cbe137e509edee4c725d0ce43f4078043114ea211de299e331"},
     {file = "atom-0.4.3-cp37-none-win_amd64.whl", hash = "sha256:8431ddbc292975217169b34eb5b1e76c423c05ac9c41b6d35cff560b743680ab"},
     {file = "atom-0.4.3.tar.gz", hash = "sha256:ce96fb50326a3bfa084463dbde1cf2e02c92735e5bc324d836355c25af87e0ae"},
+]
+bump2version = [
+    {file = "bump2version-0.5.11-py2.py3-none-any.whl", hash = "sha256:bfcc051498dda9fd9ac8634689f4516e1c20fdeeace3278932cc6e1248418b36"},
+    {file = "bump2version-0.5.11.tar.gz", hash = "sha256:524bde030318fe2543038defe0f77739605636fef96924883813cb290cf79c1e"},
 ]
 enaml = [
     {file = "enaml-0.10.4-cp27-cp27m-macosx_10_6_intel.macosx_10_9_intel.macosx_10_9_x86_64.macosx_10_10_intel.macosx_10_10_x86_64.whl", hash = "sha256:55abc1462425e2bad6378543a4f1bf410210da21164e0cf7b4ef35a098caaaa9"},
@@ -309,10 +309,6 @@ sip = [
 six = [
     {file = "six-1.13.0-py2.py3-none-any.whl", hash = "sha256:1f1b7d42e254082a9db6279deae68afb421ceba6158efa6131de7b3003ee93fd"},
     {file = "six-1.13.0.tar.gz", hash = "sha256:30f610279e8b2578cab6db20741130331735c781b56053c59c4076da27f06b66"},
-]
-trafaret = [
-    {file = "trafaret-2.0.2-py3-none-any.whl", hash = "sha256:5d560577cb7f5ec015cdb9298e46ec07fd9e0224bc0aaecc7d0fa0e92ea251d9"},
-    {file = "trafaret-2.0.2.tar.gz", hash = "sha256:61dfc25b574f70bfdf7ee3a808ec423061811c13a10b8d3c9e11ab539b96ab65"},
 ]
 websocket-client = [
     {file = "websocket_client-0.56.0-py2.py3-none-any.whl", hash = "sha256:1151d5fb3a62dc129164292e1227655e4bbc5dd5340a5165dfae61128ec50aa9"},

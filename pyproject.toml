@@ -14,6 +14,7 @@ sip = "4.19.8"
 enaml = "^0.10.4"
 
 [tool.poetry.dev-dependencies]
+bump2version = "^0.5.11"
 
 [build-system]
 requires = ["poetry>=0.12"]
