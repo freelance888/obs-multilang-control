@@ -58,7 +58,20 @@ enamldef MainWindowView(MainWindow): window:
                 if b.was_clicked and b.action == 'accept':
                     obs_manager.stop_streams()
                 obs_manager.status = "Streams stopped!"
-
+        Separator:
+            pass
+        PushButton:
+             text = "Mute audio"
+             clicked ::
+                 obs_manager.mute_origins()
+                 obs_manager.mute_trans()
+                 obs_manager.status = "Audio was muted!"
+        PushButton:
+             text = "Unmute audio"
+             clicked ::
+                 obs_manager.unmute_origins()
+                 obs_manager.unmute_trans()
+                 obs_manager.status = "Audio was unmuted!"
     Include:
         objects = [
             ObsConfiguration(window, obs_manager=obs_manager),

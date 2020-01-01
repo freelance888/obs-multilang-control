@@ -1,5 +1,6 @@
 import json
 import logging
+from typing import List
 
 from atom.containerlist import ContainerList
 from atom.dict import Dict
@@ -158,6 +159,21 @@ class ObsInstanceModel(Atom):
     #     self.stream_key = settings["settings"]["key"]
     #     self.stream_server_url = settings["settings"]["server"]
 
+    def _set_mute(self, source_name, mute):
+        self.ws.call(requests.SetMute(source_name, mute))
+
+    def mute_origin_audio(self):
+        self._set_mute(self.origin_source["name"], True)
+
+    def unmute_origin_audio(self):
+        self._set_mute(self.origin_source["name"], False)
+
+    def mute_trans_audio(self):
+        self._set_mute(self.trans_source["name"], True)
+
+    def unmute_trans_audio(self):
+        self._set_mute(self.trans_source["name"], False)
+
     def disconnect(self):
         if not self.is_connected:
             return self.is_connected
@@ -187,7 +203,7 @@ class ObsInstanceModel(Atom):
 
 class ObsManagerModel(Atom):
     current_lang_code = Unicode()
-    obs_instances = ContainerList(default=[ObsInstanceModel()])
+    obs_instances: List[ObsInstanceModel] = ContainerList(default=[ObsInstanceModel()])
     state_path = Unicode()
     status = Unicode()
 
@@ -267,3 +283,19 @@ class ObsManagerModel(Atom):
     def stop_streams(self):
         for o in self.obs_instances:
             o.stop_stream()
+
+    def mute_origins(self):
+        for o in self.obs_instances:
+            o.mute_origin_audio()
+
+    def unmute_origins(self):
+        for o in self.obs_instances:
+            o.unmute_origin_audio()
+
+    def mute_trans(self):
+        for o in self.obs_instances:
+            o.mute_trans_audio()
+
+    def unmute_trans(self):
+        for o in self.obs_instances:
+            o.unmute_trans_audio()
