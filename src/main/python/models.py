@@ -11,7 +11,6 @@ from obswebsocket import obsws, requests, events
 
 DEFAULT_HOST = "0.0.0.0"
 DEFAULT_PORT = 4444
-BASE_LANG = "Ru"
 ORIGINAL_LANG = "Original"
 
 
@@ -60,6 +59,7 @@ class ObsInstanceModel(Atom):
     switch_triggered = Bool()
 
     is_stream_started = Bool()
+    is_audio_muted = Bool()
     # stream_server_url = Unicode()
     # stream_key = Unicode()
     # stream_settings = Dict(dict(type='rtmp_common', save=True, settings=dict(ser)))
@@ -154,6 +154,7 @@ class ObsInstanceModel(Atom):
             elif source["name"] == f"{self.lang_code} Translation":
                 self.trans_source = source
         self.scene_name = scene["name"]
+        self.mute_audio()
 
     # settings = _current_obs_stream_settings(self.ws)
     # if settings["type"] == "rtmp_common":
@@ -163,17 +164,15 @@ class ObsInstanceModel(Atom):
     def _set_mute(self, source_name, mute):
         self.ws.call(requests.SetMute(source_name, mute))
 
-    def mute_origin_audio(self):
+    def mute_audio(self):
         self._set_mute(self.origin_source["name"], True)
-
-    def unmute_origin_audio(self):
-        self._set_mute(self.origin_source["name"], False)
-
-    def mute_trans_audio(self):
         self._set_mute(self.trans_source["name"], True)
+        self.is_audio_muted = True
 
-    def unmute_trans_audio(self):
+    def unmute_audio(self):
+        self._set_mute(self.origin_source["name"], False)
         self._set_mute(self.trans_source["name"], False)
+        self.is_audio_muted = False
 
     def disconnect(self):
         if not self.is_connected:
@@ -288,18 +287,10 @@ class ObsManagerModel(Atom):
         for o in self.obs_instances:
             o.stop_stream()
 
-    def mute_origins(self):
+    def mute_audios(self):
         for o in self.obs_instances:
-            o.mute_origin_audio()
+            o.mute_audio()
 
-    def unmute_origins(self):
+    def unmute_audios(self):
         for o in self.obs_instances:
-            o.unmute_origin_audio()
-
-    def mute_trans(self):
-        for o in self.obs_instances:
-            o.mute_trans_audio()
-
-    def unmute_trans(self):
-        for o in self.obs_instances:
-            o.unmute_trans_audio()
+            o.unmute_audio()

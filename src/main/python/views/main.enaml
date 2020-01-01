@@ -63,14 +63,12 @@ enamldef MainWindowView(MainWindow): window:
         PushButton:
              text = "Mute audio"
              clicked ::
-                 obs_manager.mute_origins()
-                 obs_manager.mute_trans()
+                 obs_manager.mute_audios()
                  obs_manager.status = "Audio was muted!"
         PushButton:
              text = "Unmute audio"
              clicked ::
-                 obs_manager.unmute_origins()
-                 obs_manager.unmute_trans()
+                 obs_manager.unmute_audios()
                  obs_manager.status = "Audio was unmuted!"
     Include:
         objects = [
