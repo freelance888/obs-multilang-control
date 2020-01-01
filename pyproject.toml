@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "obs-control"
+name = "obs-multilang-control"
 version = "0.1.0"
 description = ""
 authors = ["Serhii Khalymon <sergiykhalimon@gmail.com>"]

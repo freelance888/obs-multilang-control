@@ -154,7 +154,6 @@ class ObsInstanceModel(Atom):
             elif source["name"] == f"{self.lang_code} Translation":
                 self.trans_source = source
         self.scene_name = scene["name"]
-        self.mute_audio()
 
     # settings = _current_obs_stream_settings(self.ws)
     # if settings["type"] == "rtmp_common":
