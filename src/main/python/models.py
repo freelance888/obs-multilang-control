@@ -9,7 +9,7 @@ from atom.instance import Instance
 from atom.scalars import Unicode, Bool, Int, Float
 from obswebsocket import obsws, requests, events
 
-DEFAULT_HOST = "0.0.0.0"
+DEFAULT_HOST = "127.0.0.1"
 DEFAULT_PORT = 4444
 ORIGINAL_LANG = "Original"
 
