@@ -1,7 +1,6 @@
 from enaml.core.api import Looper
 from enaml.layout.api import vbox, hbox, align
 from enaml.core.include import Include
-#from enaml.stdlib.fields import IntField
 from enaml.widgets.api import (
     DockPane, Container, Label, Field, Form, PushButton, Separator, VGroup, HGroup, SpinBox
 )
@@ -9,7 +8,6 @@ from enaml.widgets.api import (
 
 enamldef ObsConnection(Container):
     attr obs
-    attr field_enabled: bool = True
 
     padding = 2
     constraints = [

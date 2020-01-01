@@ -9,63 +9,69 @@ from .obs_connection import ObsConnectionManager
 from .lang_switcher import LangSwitcher
 
 
+enamldef MainMenu(VGroup):
+    attr obs_manager
+
+    PushButton:
+        text = "Save state"
+        clicked ::
+            obs_manager.save_state()
+            obs_manager.status = "State saved!"
+    PushButton:
+        text = "Restore state"
+        clicked ::
+            obs_manager.restore_state()
+            obs_manager.status = "State restored!"
+    Separator:
+        pass
+    PushButton:
+        text = "Connect all"
+        clicked ::
+            obs_manager.connect_all()
+            obs_manager.status = "Connected to all OBS!"
+    PushButton:
+        text = "Disconnect all"
+        clicked ::
+            obs_manager.disconnect_all()
+            obs_manager.status = "Disconnected from all OBS!"
+    Separator:
+        pass
+    PushButton:
+        text = "Start streams"
+        clicked ::
+            b = question(self, "Start stream", "Do you want to start stream?")
+            if b.was_clicked and b.action == 'accept':
+                obs_manager.start_streams()
+            obs_manager.status = "Streams started!"
+    PushButton:
+        text = "Stop streams"
+        clicked ::
+            b = question(self, "Stop stream", "Do you want to stop stream?")
+            if b.was_clicked and b.action == 'accept':
+                obs_manager.stop_streams()
+            obs_manager.status = "Streams stopped!"
+    Separator:
+        pass
+    PushButton:
+         text = "Mute audio"
+         clicked ::
+             obs_manager.mute_audios()
+             obs_manager.status = "Audio was muted!"
+    PushButton:
+         text = "Unmute audio"
+         clicked ::
+             obs_manager.unmute_audios()
+             obs_manager.status = "Audio was unmuted!"
+
+
 enamldef MainWindowView(MainWindow): window:
     attr obs_manager
 
     initial_size = (400, 400)
     title = "OBS Multi lang control"
 
-    VGroup: menu:
-        PushButton:
-            text = "Save state"
-            clicked ::
-                obs_manager.save_state()
-                obs_manager.status = "State saved!"
-        PushButton:
-            text = "Restore state"
-            clicked ::
-                obs_manager.restore_state()
-                obs_manager.status = "State restored!"
-        Separator:
-            pass
-        PushButton:
-            text = "Connect all"
-            clicked ::
-                obs_manager.connect_all()
-                obs_manager.status = "Connected to all OBS!"
-        PushButton:
-            text = "Disconnect all"
-            clicked ::
-                obs_manager.disconnect_all()
-                obs_manager.status = "Disconnected from all OBS!"
-        Separator:
-            pass
-        PushButton:
-            text = "Start streams"
-            clicked ::
-                b = question(self, "Start stream", "Do you want to start stream?")
-                if b.was_clicked and b.action == 'accept':
-                    obs_manager.start_streams()
-                obs_manager.status = "Streams started!"
-        PushButton:
-            text = "Stop streams"
-            clicked ::
-                b = question(self, "Stop stream", "Do you want to stop stream?")
-                if b.was_clicked and b.action == 'accept':
-                    obs_manager.stop_streams()
-                obs_manager.status = "Streams stopped!"
-        Separator:
-            pass
-        PushButton:
-             text = "Mute audio"
-             clicked ::
-                 obs_manager.mute_audios()
-                 obs_manager.status = "Audio was muted!"
-        PushButton:
-             text = "Unmute audio"
-             clicked ::
-                 obs_manager.unmute_audios()
-                 obs_manager.status = "Audio was unmuted!"
+    MainMenu:
+        obs_manager = obs_manager
     Include:
         objects = [
             ObsConnectionManager(window, obs_manager=obs_manager),
@@ -75,6 +81,3 @@ enamldef MainWindowView(MainWindow): window:
         StatusItem:
             Label:
                 text << "Status: {}".format(obs_manager.status)
-
-
-
