@@ -1,5 +1,4 @@
-from enaml.core.api import Looper
-from enaml.layout.api import vbox, hbox, align
+from enaml.layout.api import hbox
 from enaml.core.include import Include
 from enaml.widgets.api import (
     DockPane, Container, Label, Field, Form, PushButton, Separator, VGroup, HGroup, SpinBox
