@@ -1,3 +1,8 @@
+## [1.1.0] - 05-01-2020
+### Added
+- Configure OBS for specific language with template
+- Launch OBS for specific language from GUI
+
 ## [1.0.0] - 01-01-2020
 - Multiple language support based on OBS Profile
 - Save/restore states of OBS connections configurations and volume levels

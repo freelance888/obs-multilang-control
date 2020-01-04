@@ -1,0 +1,88 @@
+from enaml.core.api import Looper
+from enaml.core.include import Include
+from enaml.widgets.api import Window, PushButton, HGroup, VGroup, Label, Field, Container, Form, SpinBox, Separator
+
+
+enamldef CreateObsProfile(Form):
+    attr prof
+    Label:
+        text = "Lang code"
+    Field:
+        text := prof.lang_code
+    Label:
+        text = "Websocket Port"
+    SpinBox:
+        minimum = 4444
+        maximum = 4464
+        value := prof.websocket_port
+
+enamldef ObsProfile(Container):
+    attr prof
+    padding = 2
+    HGroup:
+        padding = 0
+        spacing = 0
+        PushButton:
+            text = f"{prof.lang_code}"
+            clicked ::
+                obs_config.open_obs_instance(prof)
+        Label:
+            text = str(prof.websocket_port)
+        PushButton:
+            text = '−'
+            clicked ::
+                obs_config.remove_profile_and_scene(prof)
+    HGroup:
+        padding = 0
+        spacing = 0
+        Separator:
+             pass
+
+enamldef Title(Container):
+    padding = 0
+    HGroup:
+        padding = 0
+        spacing = 0
+        Label:
+            text = "Open OBS"
+        Label:
+            text = "WS port"
+        Label:
+            text = "Delete"
+    HGroup:
+        padding = 0
+        spacing = 0
+        Separator:
+             pass
+
+
+enamldef ObsConfigurationManager(Window):
+    attr obs_config
+    attr profile
+    initial_size = (300, 400)
+    title = "OBS Configuration"
+
+    Container:
+        Title:
+            pass
+        HGroup:
+            padding = 0
+            spacing = 0
+            VGroup:
+                padding = 0
+                spacing = 0
+                Include: inc:
+                    objects << [
+                        ObsProfile(prof=prof)
+                        for prof in obs_config.profiles
+                    ]
+        CreateObsProfile:
+            prof := profile
+        PushButton:
+            text = "Create New Profile"
+            clicked ::
+                obs_config.update_available_profiles()
+                obs_config.create_profile_and_scene(profile)
+                obs_config.update_available_profiles()
+#    PushButton:
+#        text = "Set youtube stream Key"

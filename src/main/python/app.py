@@ -7,44 +7,59 @@ from fbs_runtime.application_context import cached_property
 from fbs_runtime.application_context.PyQt5 import ApplicationContext
 from fbs_runtime.platform import is_windows
 from enaml.qt.qt_application import QtApplication
-from models import ObsManagerModel
+from models import ObsManagerModel, ObsConfigurationModel, Profile
 
 
-class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
-    def __init__(self, icon, parent, view):
+class ShowHideWindowTray(object):
+    def __init__(self, view_name, view):
+        self.view_name = view_name
         self.view = view
-
-        QtWidgets.QSystemTrayIcon.__init__(self, parent)
-        if icon:
-            self.setIcon(icon)
-        menu = QtWidgets.QMenu(parent)
-
-        self.show_action = menu.addAction(self._show_text)
-
-        sparator = menu.addSeparator()
-        self.exit_action = menu.addAction("Exit")
-
-        self.setContextMenu(menu)
-        self.exit_action.triggered.connect(self.exit)
-        self.show_action.triggered.connect(self.show_hide)
-
-    def exit(self):
-        QtCore.QCoreApplication.exit()
+        self.action = None
 
     @property
-    def _show_text(self):
+    def display_text(self):
         if not self.view.visible:
-            return "Show OBS Control"
+            return f"Show {self.view_name}"
         else:
-            return "Hide OBS Control"
+            return f"Hide {self.view_name}"
 
-    def show_hide(self):
+    def show_hide_window(self):
         logging.debug("Show\Hide action clicked")
         if self.view.visible:
             self.view.hide()
         else:
             self.view.show()
-        self.show_action.setText(self._show_text)
+        self.action.setText(self.display_text)
+
+
+class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
+    def __init__(self, icon, parent, obs_control_view, obs_manage_view):
+        self.obs_control_view = obs_control_view
+
+        QtWidgets.QSystemTrayIcon.__init__(self, parent)
+        if icon:
+            self.setIcon(icon)
+        menu = QtWidgets.QMenu(parent)
+        obs_control = ShowHideWindowTray("OBS control", obs_control_view)
+        obs_manage = ShowHideWindowTray("OBS manage", obs_manage_view)
+
+        obs_control.action = menu.addAction(obs_control.display_text)
+        obs_manage.action = menu.addAction(obs_manage.display_text)
+        self.sparator = menu.addSeparator()
+        self.exit_action = menu.addAction("Exit")
+
+        self.setContextMenu(menu)
+
+        self.exit_action.triggered.connect(self.exit)
+
+        obs_control.action.triggered.connect(obs_control.show_hide_window)
+        obs_manage.action.triggered.connect(obs_manage.show_hide_window)
+        # need to be connected to self for prevent deleting by GC
+        self.obs_control = obs_control
+        self.obs_manage = obs_manage
+
+    def exit(self):
+        QtCore.QCoreApplication.exit()
 
 
 class CustomQtApplication(QtApplication):
@@ -79,13 +94,29 @@ class AppContext(ApplicationContext):
     def run(self):
         with enaml.imports():
             from views.main import MainWindowView
+            from views.obs_configuration import ObsConfigurationManager
 
         state_path = self.get_resource("state.json")
         obs_manager = ObsManagerModel(state_path=state_path)
 
-        view = MainWindowView(obs_manager=obs_manager)
-        view.show()
+        obs_control_view = MainWindowView(obs_manager=obs_manager)
+        obs_control_view.show()
+
+        profile_path = self.get_resource("profile-base")
+        scene_path = self.get_resource("scene-base.json")
+
+        obs_config = ObsConfigurationModel(
+            template_profile_path=profile_path, template_scene_path=scene_path
+        )
+        new_profile = Profile()
+        obs_config.update_available_profiles()
+        obs_configuration_view = ObsConfigurationManager(
+            obs_config=obs_config, profile=new_profile
+        )
+        obs_configuration_view.show()
         parent = QtWidgets.QWidget()
-        tray_icon = SystemTrayIcon(self.app_icon, parent, view)
+        tray_icon = SystemTrayIcon(
+            self.app_icon, parent, obs_control_view, obs_configuration_view
+        )
         tray_icon.show()
         return self.app.exec_()
