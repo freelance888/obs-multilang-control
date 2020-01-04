@@ -1,3 +1,7 @@
+## [1.1.1] - 05-01-2020
+### Fixed
+- Broken menu navigation
+
 ## [1.1.0] - 05-01-2020
 ### Added
 - Configure OBS for specific language with template
