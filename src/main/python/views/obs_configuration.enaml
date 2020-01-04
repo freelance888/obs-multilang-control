@@ -60,6 +60,7 @@ enamldef ObsConfigurationManager(Window): window:
     attr obs_config
     attr profile
     initial_size = (300, 400)
+    destroy_on_close = False
     title = "OBS Configuration"
 
     Container:
