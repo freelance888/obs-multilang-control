@@ -68,15 +68,14 @@ enamldef MainWindowView(MainWindow): window:
     attr obs_manager
 
     initial_size = (400, 400)
-    title = "OBS Multi lang control"
+    title = "OBS Multilang Control"
 
     MainMenu:
-        obs_manager = obs_manager
-    Include:
-        objects = [
-            ObsConnectionManager(window, obs_manager=obs_manager),
-            LangSwitcher(obs_manager=obs_manager)
-        ]
+        obs_manager = window.obs_manager
+    ObsConnectionManager:
+        obs_manager = window.obs_manager
+    LangSwitcher:
+        obs_manager = window.obs_manager
     StatusBar:
         StatusItem:
             Label:
