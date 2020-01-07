@@ -2,6 +2,7 @@ import codecs
 import configparser
 import json
 import logging
+import os
 import shlex
 import shutil
 import subprocess
@@ -322,20 +323,25 @@ class ObsConfigurationModel(Atom):
         scene_file.unlink()
 
     def open_obs_instance(self, profile: Profile):
+        app_dir = os.getcwd()
         code = profile.lang_code
         if is_mac():
+            path = "/Applications/"
             args = shlex.split(
-                f"/usr/bin/open -n -a /Applications/OBS.app --args --multi --profile {code} --collection {code}"
+                f"/usr/bin/open -n -a OBS.app --args --multi --profile {code} --collection {code}"
             )
         elif is_windows():
+            path = "C:/Program Files/obs-studio/bin/64bit/"
             args = shlex.split(
-                f'C:/Program Files/obs-studio/bin/64bit/obs64.exe -multi -profile "{code}" -collection "{code}"',
-                posix=False,
+                f'obs64.exe -multi -profile "{code}" -collection "{code}"', posix=False,
             )
+
         else:
             logging.error("Not supported platform")
             return
+        os.chdir(path)
         subprocess.Popen(args)
+        os.chdir(app_dir)
 
 
 def rm_tree(pth: Path):
