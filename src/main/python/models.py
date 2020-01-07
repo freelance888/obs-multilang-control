@@ -1,3 +1,4 @@
+import codecs
 import configparser
 import json
 import logging
@@ -237,7 +238,7 @@ class ObsConfigurationModel(Atom):
             self._set_config_path()
         for path in Path(self.obs_studio_config_path).rglob("*/basic.ini"):
             config = configparser.ConfigParser()
-            config.read(path)
+            config.read_file(codecs.open(path, "r", "utf-8-sig"))
             lang_code = config["General"]["Name"]
             try:
                 port = int(config["WebsocketAPI"]["ServerPort"])
@@ -328,7 +329,7 @@ class ObsConfigurationModel(Atom):
             )
         elif is_windows():
             args = shlex.split(
-                f"C:/Program Files/obs-studio/bin/64bit/obs.exe -multi -profile {code} -collection {code}",
+                f'C:/Program Files/obs-studio/bin/64bit/obs64.exe -multi -profile "{code}" -collection "{code}"',
                 posix=False,
             )
         else:
