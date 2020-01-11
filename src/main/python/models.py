@@ -327,13 +327,24 @@ class ObsConfigurationModel(Atom):
         code = profile.lang_code
         if is_mac():
             path = "/Applications/"
+            if not Path(path) / "OBS.app":
+                raise ValueError("No OBS instance present")
             args = shlex.split(
                 f"/usr/bin/open -n -a OBS.app --args --multi --profile {code} --collection {code}"
             )
         elif is_windows():
-            path = "C:/Program Files/obs-studio/bin/64bit/"
+            path32 = "C:/Program Files (x86)/obs-studio/bin/32bit/"
+            path64 = "C:/Program Files/obs-studio/bin/64bit/"
+            if Path(path32).exists():
+                path = path32
+                obs_name = 'obs32'
+            elif Path(path64).exists():
+                path = path64
+                obs_name = 'obs64'
+            else:
+                raise ValueError("No OBS instance present")
             args = shlex.split(
-                f'obs64.exe -multi -profile "{code}" -collection "{code}"', posix=False,
+                f'{obs_name}.exe -multi -profile "{code}" -collection "{code}"', posix=False,
             )
 
         else:
