@@ -12,7 +12,6 @@
         "enaml.widgets.api",
         "enaml.widgets.form",
         "enaml.layout.api",
-        "enaml.core.api",
-        "enaml.stdlib.fields"
+        "enaml.core.api"
     ]
 }
