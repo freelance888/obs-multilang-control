@@ -351,6 +351,7 @@ class ObsConfigurationModel(Atom):
             logging.error("Not supported platform")
             return
         os.chdir(path)
+        logging.info(f"Args for opening: {args}")
         subprocess.Popen(args)
         os.chdir(app_dir)
 
