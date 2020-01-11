@@ -344,7 +344,7 @@ class ObsConfigurationModel(Atom):
             else:
                 raise ValueError("No OBS instance present")
             args = shlex.split(
-                f'{obs_name}.exe -multi -profile "{code}" -collection "{code}"', posix=False,
+                f'{obs_name}.exe -multi -profile {code} -collection {code}', posix=False,
             )
 
         else:
