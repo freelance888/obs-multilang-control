@@ -160,7 +160,7 @@ class ObsInstanceModel(Atom):
         for source in scene["sources"]:
             if source["name"] == "Origin VA":
                 self.origin_source = source
-            elif source["name"] == f"{self.lang_code} Translation":
+            elif source["name"] == f"TS {self.lang_code} Translation":
                 self.trans_source = source
         self.scene_name = scene["name"]
 
