@@ -233,6 +233,7 @@ class ObsConfigurationModel(Atom):
             )
         elif is_windows():
             self.obs_studio_config_path = str(home / "AppData/Roaming/obs-studio")
+        logging.debug(f"OBS Studio path config {self.obs_studio_config_path}")
 
     def update_available_profiles(self):
         if not self.obs_studio_config_path:
@@ -248,6 +249,7 @@ class ObsConfigurationModel(Atom):
             if port in self.used_ports:
                 continue
             self.profiles.append(Profile(lang_code=lang_code, websocket_port=port))
+        logging.debug(f"Profiles updated")
         return self.profiles
 
     @property
@@ -271,6 +273,7 @@ class ObsConfigurationModel(Atom):
         config["WebsocketAPI"]["ServerPort"] = str(profile.websocket_port)
 
         lang_obs_profile_path = basic_dir / "profiles" / profile.lang_code
+        logging.debug(f"Lang obs profile path {lang_obs_profile_path}")
         if not lang_obs_profile_path.exists():
             lang_obs_profile_path.mkdir()
         self._write_config(config, lang_obs_profile_path / "basic.ini")
@@ -282,6 +285,7 @@ class ObsConfigurationModel(Atom):
 
     def _create_scene(self, profile, basic_dir):
         lang_obs_scene_path = basic_dir / "scenes" / "{}.json".format(profile.lang_code)
+        logging.debug(f"Lang obs scene path {lang_obs_scene_path}")
         with open(self.template_scene_path, "r") as templ:
             templ = Template(templ.read())
             conf_text = templ.substitute(
@@ -304,6 +308,7 @@ class ObsConfigurationModel(Atom):
             return
 
         basic_dir = Path(self.obs_studio_config_path) / "basic"
+        logging.info(f"Basic dir {basic_dir}")
         for path in basic_dir.rglob("*"):
             if path.name.lower() == profile.lang_code.lower():
                 logging.error(f"`{path.name}` is already created")
@@ -344,7 +349,7 @@ class ObsConfigurationModel(Atom):
             else:
                 raise ValueError("No OBS instance present")
             args = shlex.split(
-                f'{obs_name}.exe -multi -profile {code} -collection {code}', posix=False,
+                f'{obs_name}.exe -multi -profile "{code}" -collection "{code}"', posix=False,
             )
 
         else:
@@ -388,6 +393,7 @@ class ObsManagerModel(Atom):
             return obs
         self.obs_instances.append(obs)
         self.status = f"OBS configuration with address {obs.host}:{obs.port} created!"
+        logging.debug(self.status)
         return obs
 
     def pop_obs_instance(self):
@@ -425,6 +431,7 @@ class ObsManagerModel(Atom):
                 obs.switch_to_translation()
                 logging.info(f"OBS {obs.lang_code} was switched to TRANSLATION sound")
         self.status = f"Switched from {self.current_lang_code} to {next_lang_code}!"
+        logging.debug(self.status)
         self.current_lang_code = next_lang_code
         return next_obs
 
