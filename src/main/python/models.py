@@ -382,7 +382,7 @@ class ObsManagerModel(Atom):
         if isinstance(obs_or_host, ObsInstanceModel):
             obs = obs_or_host
         elif obs_or_host and port:
-            obs = ObsInstanceModel(host=obs_or_host, port=port)
+            obs = ObsInstanceModel(host=obs_or_host.strip(), port=port)
         else:
             obs = ObsInstanceModel()
         if obs.port != DEFAULT_PORT and obs.port in [
