@@ -58,37 +58,6 @@
             "enabled": true,
             "flags": 0,
             "hotkeys": {
-                "MediaSource.Restart": [],
-                "libobs.mute": [],
-                "libobs.push-to-mute": [],
-                "libobs.push-to-talk": [],
-                "libobs.unmute": []
-            },
-            "id": "ffmpeg_source",
-            "mixers": 255,
-            "monitoring_type": 0,
-            "muted": false,
-            "name": "Live $lang_code Translation",
-            "prev_ver": 402653189,
-            "private_settings": {},
-            "push-to-mute": false,
-            "push-to-mute-delay": 0,
-            "push-to-talk": false,
-            "push-to-talk-delay": 0,
-            "settings": {
-                "input": "http://78.47.32.71:7800/$lang_code_lower",
-                "is_local_file": false
-            },
-            "sync": 0,
-            "volume": 1.0
-        },
-        {
-            "balance": 0.5,
-            "deinterlace_field_order": 0,
-            "deinterlace_mode": 0,
-            "enabled": true,
-            "flags": 0,
-            "hotkeys": {
                 "libobs.mute": [],
                 "libobs.push-to-mute": [],
                 "libobs.push-to-talk": [],
@@ -107,35 +76,6 @@
             "push-to-talk-delay": 0,
             "settings": {},
             "sync": 0,
-            "volume": 0.0081044957041740417
-        },
-        {
-            "balance": 0.5,
-            "deinterlace_field_order": 0,
-            "deinterlace_mode": 0,
-            "enabled": true,
-            "flags": 0,
-            "hotkeys": {
-                "libobs.mute": [],
-                "libobs.push-to-mute": [],
-                "libobs.push-to-talk": [],
-                "libobs.unmute": []
-            },
-            "id": "ndi_source",
-            "mixers": 255,
-            "monitoring_type": 0,
-            "muted": false,
-            "name": "VA Origin",
-            "prev_ver": 402653189,
-            "private_settings": {},
-            "push-to-mute": false,
-            "push-to-mute-delay": 0,
-            "push-to-talk": false,
-            "push-to-talk-delay": 0,
-            "settings": {
-                "ndi_fix_alpha_blending": false
-            },
-            "sync": 0,
             "volume": 1.0
         },
         {
@@ -146,13 +86,9 @@
             "flags": 0,
             "hotkeys": {
                 "OBSBasic.SelectScene": [],
-                "libobs.hide_scene_item.Live $lang_code Translation": [],
                 "libobs.hide_scene_item.TS $lang_code Translation": [],
-                "libobs.hide_scene_item.VA Backup": [],
                 "libobs.hide_scene_item.VA Origin": [],
-                "libobs.show_scene_item.Live $lang_code Translation": [],
                 "libobs.show_scene_item.TS $lang_code Translation": [],
-                "libobs.show_scene_item.VA Backup": [],
                 "libobs.show_scene_item.VA Origin": []
             },
             "id": "scene",
@@ -173,35 +109,6 @@
                     {
                         "align": 5,
                         "bounds": {
-                            "x": 0.0,
-                            "y": 0.0
-                        },
-                        "bounds_align": 0,
-                        "bounds_type": 0,
-                        "crop_bottom": 0,
-                        "crop_left": 0,
-                        "crop_right": 0,
-                        "crop_top": 0,
-                        "group_item_backup": false,
-                        "id": 4,
-                        "locked": false,
-                        "name": "VA Backup",
-                        "pos": {
-                            "x": 0.0,
-                            "y": 0.0
-                        },
-                        "private_settings": {},
-                        "rot": 0.0,
-                        "scale": {
-                            "x": 1.0,
-                            "y": 1.0
-                        },
-                        "scale_filter": "disable",
-                        "visible": false
-                    },
-                    {
-                        "align": 5,
-                        "bounds": {
                             "x": 1920.0,
                             "y": 1080.0
                         },
@@ -216,35 +123,6 @@
                         "locked": false,
                         "name": "VA Origin",
                         "pos": {
-                            "x": -504.0,
-                            "y": 373.0
-                        },
-                        "private_settings": {},
-                        "rot": 0.0,
-                        "scale": {
-                            "x": 1.0,
-                            "y": 1.0
-                        },
-                        "scale_filter": "disable",
-                        "visible": true
-                    },
-                    {
-                        "align": 5,
-                        "bounds": {
-                            "x": 1920.0,
-                            "y": 1080.0
-                        },
-                        "bounds_align": 0,
-                        "bounds_type": 1,
-                        "crop_bottom": 0,
-                        "crop_left": 0,
-                        "crop_right": 0,
-                        "crop_top": 0,
-                        "group_item_backup": false,
-                        "id": 2,
-                        "locked": false,
-                        "name": "TS $lang_code Translation",
-                        "pos": {
                             "x": 0.0,
                             "y": 0.0
                         },
@@ -270,9 +148,9 @@
                         "crop_right": 0,
                         "crop_top": 0,
                         "group_item_backup": false,
-                        "id": 3,
+                        "id": 5,
                         "locked": false,
-                        "name": "Live $lang_code Translation",
+                        "name": "TS $lang_code Translation",
                         "pos": {
                             "x": 0.0,
                             "y": 0.0
@@ -284,7 +162,7 @@
                             "y": 1.0
                         },
                         "scale_filter": "disable",
-                        "visible": false
+                        "visible": true
                     }
                 ]
             },
@@ -307,15 +185,16 @@
             "mixers": 255,
             "monitoring_type": 0,
             "muted": false,
-            "name": "VA Backup",
-            "prev_ver": 402653189,
+            "name": "VA Origin",
+            "prev_ver": 402653187,
             "private_settings": {},
             "push-to-mute": false,
             "push-to-mute-delay": 0,
             "push-to-talk": false,
             "push-to-talk-delay": 0,
             "settings": {
-                "ndi_fix_alpha_blending": false
+                "ndi_fix_alpha_blending": false,
+                "ndi_source_name": "MAIN-STREAM (vMix - Output 1)"
             },
             "sync": 0,
             "volume": 1.0
