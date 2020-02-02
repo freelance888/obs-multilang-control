@@ -24,7 +24,7 @@ enamldef ObsConnection(Container):
         text := obs.host
         enabled << True if not obs.is_connected else False
     SpinBox: port_field:
-        minimum = 4444
+        minimum = 4441
         maximum = 4464
         value := obs.port
         enabled << True if not obs.is_connected else False
