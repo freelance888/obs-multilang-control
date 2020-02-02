@@ -20,7 +20,7 @@ from obswebsocket import obsws, requests, events
 
 DEFAULT_LANG = "Ru"
 DEFAULT_HOST = "127.0.0.1"
-DEFAULT_PORT = 4444
+DEFAULT_PORT = 4441
 
 
 def _create_connection(host, port, password=None):
@@ -195,8 +195,6 @@ class ObsInstanceModel(Atom):
         self.origin_volume_level_on_origin = state["origin_volume_level_on_origin"]
         self.origin_volume_level_on_trans = state["origin_volume_level_on_trans"]
         self.trans_volume_level_on_trans = state["trans_volume_level_on_trans"]
-        if not self.is_connected and state["is_connected"]:
-            self.connect()
 
     def __getstate__(self):
         return dict(
@@ -378,7 +376,7 @@ class ObsManagerModel(Atom):
     state_path = Unicode()
     status = Unicode()
 
-    def add_obs_instance(self, obs_or_host=None, port=None):
+    def  add_obs_instance(self, obs_or_host=None, port=None):
         if isinstance(obs_or_host, ObsInstanceModel):
             obs = obs_or_host
         elif obs_or_host and port:
@@ -417,7 +415,7 @@ class ObsManagerModel(Atom):
     def switch_to_lang(self, next_lang_code):
         if next_lang_code == self.current_lang_code:
             logging.info(f"Already at {next_lang_code}")
-            return
+
         next_obs = None
         for obs in self.obs_instances:
             if next_lang_code == self.ORIGINAL_LANG:

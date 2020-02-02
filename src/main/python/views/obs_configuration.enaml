@@ -12,7 +12,7 @@ enamldef CreateObsProfile(Form):
     Label:
         text = "Websocket Port"
     SpinBox:
-        minimum = 4444
+        minimum = 4441
         maximum = 4464
         value := profile.websocket_port
 
