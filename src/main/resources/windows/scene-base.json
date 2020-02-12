@@ -11,6 +11,12 @@
             "switch_if_not_matching": false,
             "switches": []
         },
+        "captions": {
+            "enabled": false,
+            "lang_id": 1033,
+            "provider": "mssapi",
+            "source": ""
+        },
         "output-timer": {
             "autoStartRecordTimer": false,
             "autoStartStreamTimer": false,
@@ -63,12 +69,12 @@
                 "libobs.push-to-talk": [],
                 "libobs.unmute": []
             },
-            "id": "coreaudio_output_capture",
+            "id": "wasapi_output_capture",
             "mixers": 255,
             "monitoring_type": 0,
             "muted": false,
             "name": "TS $lang_code Translation",
-            "prev_ver": 402653189,
+            "prev_ver": 402653187,
             "private_settings": {},
             "push-to-mute": false,
             "push-to-mute-delay": 0,

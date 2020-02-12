@@ -1,7 +1,7 @@
 {
     "settings": {
         "bwtest": false,
-        "key": "$stream_key",
+        "key": "",
         "server": "rtmp://a.rtmp.youtube.com/live2",
         "service": "YouTube / YouTube Gaming"
     },

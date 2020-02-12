@@ -1,0 +1,5 @@
+enaml==0.10.4
+-e git+https://github.com/Infernion/fbs@ff32bbfe56e0cd84fef35d7b17653f9925f68895#egg=fbs
+-e git+https://github.com/Infernion/obs-websocket-py@c173c0af9b98f64c35702596c740cd29e526819a#egg=obs_websocket_py
+PyQt5==5.9.2
+trafaret==2.0.2

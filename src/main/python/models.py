@@ -1,6 +1,8 @@
+import codecs
 import configparser
 import json
 import logging
+import os
 import shlex
 import shutil
 import subprocess
@@ -8,6 +10,7 @@ from pathlib import Path
 from string import Template
 from typing import List
 
+import trafaret as t
 from atom.containerlist import ContainerList
 from atom.dict import Dict
 from atom.atom import Atom
@@ -16,12 +19,18 @@ from atom.scalars import Unicode, Bool, Int, Float
 from fbs_runtime.platform import is_mac, is_windows
 from obswebsocket import obsws, requests, events
 
+from utils import is_open
+
 DEFAULT_LANG = "Ru"
 DEFAULT_HOST = "127.0.0.1"
-DEFAULT_PORT = 4444
+DEFAULT_PORT = 4441
 
 
 def _create_connection(host, port, password=None):
+    host = t.IPv4.check(host)
+    if not is_open(host, port):
+        logging.error(f"Address {host}:{port} not reachable")
+        return None
     ws = obsws(host, port, password)
     try:
         ws.connect()
@@ -156,9 +165,9 @@ class ObsInstanceModel(Atom):
         self.lang_code = _current_obs_lang(self.ws)
         scene = _current_obs_scene(self.ws)
         for source in scene["sources"]:
-            if source["name"] == "Origin VA":
+            if source["name"] == "VA Origin":
                 self.origin_source = source
-            elif source["name"] == f"{self.lang_code} Translation":
+            elif source["name"] == f"TS {self.lang_code} Translation":
                 self.trans_source = source
         self.scene_name = scene["name"]
 
@@ -193,8 +202,6 @@ class ObsInstanceModel(Atom):
         self.origin_volume_level_on_origin = state["origin_volume_level_on_origin"]
         self.origin_volume_level_on_trans = state["origin_volume_level_on_trans"]
         self.trans_volume_level_on_trans = state["trans_volume_level_on_trans"]
-        if not self.is_connected and state["is_connected"]:
-            self.connect()
 
     def __getstate__(self):
         return dict(
@@ -231,13 +238,14 @@ class ObsConfigurationModel(Atom):
             )
         elif is_windows():
             self.obs_studio_config_path = str(home / "AppData/Roaming/obs-studio")
+        logging.debug(f"OBS Studio path config {self.obs_studio_config_path}")
 
     def update_available_profiles(self):
         if not self.obs_studio_config_path:
             self._set_config_path()
         for path in Path(self.obs_studio_config_path).rglob("*/basic.ini"):
             config = configparser.ConfigParser()
-            config.read(path)
+            config.read_file(codecs.open(path, "r", "utf-8-sig"))
             lang_code = config["General"]["Name"]
             try:
                 port = int(config["WebsocketAPI"]["ServerPort"])
@@ -246,6 +254,7 @@ class ObsConfigurationModel(Atom):
             if port in self.used_ports:
                 continue
             self.profiles.append(Profile(lang_code=lang_code, websocket_port=port))
+        logging.debug(f"Profiles updated")
         return self.profiles
 
     @property
@@ -269,6 +278,7 @@ class ObsConfigurationModel(Atom):
         config["WebsocketAPI"]["ServerPort"] = str(profile.websocket_port)
 
         lang_obs_profile_path = basic_dir / "profiles" / profile.lang_code
+        logging.debug(f"Lang obs profile path {lang_obs_profile_path}")
         if not lang_obs_profile_path.exists():
             lang_obs_profile_path.mkdir()
         self._write_config(config, lang_obs_profile_path / "basic.ini")
@@ -280,6 +290,7 @@ class ObsConfigurationModel(Atom):
 
     def _create_scene(self, profile, basic_dir):
         lang_obs_scene_path = basic_dir / "scenes" / "{}.json".format(profile.lang_code)
+        logging.debug(f"Lang obs scene path {lang_obs_scene_path}")
         with open(self.template_scene_path, "r") as templ:
             templ = Template(templ.read())
             conf_text = templ.substitute(
@@ -302,6 +313,7 @@ class ObsConfigurationModel(Atom):
             return
 
         basic_dir = Path(self.obs_studio_config_path) / "basic"
+        logging.info(f"Basic dir {basic_dir}")
         for path in basic_dir.rglob("*"):
             if path.name.lower() == profile.lang_code.lower():
                 logging.error(f"`{path.name}` is already created")
@@ -321,20 +333,38 @@ class ObsConfigurationModel(Atom):
         scene_file.unlink()
 
     def open_obs_instance(self, profile: Profile):
+        app_dir = os.getcwd()
         code = profile.lang_code
         if is_mac():
+            path = "/Applications/"
+            if not Path(path) / "OBS.app":
+                raise ValueError("No OBS instance present")
             args = shlex.split(
-                f"/usr/bin/open -n -a /Applications/OBS.app --args --multi --profile {code} --collection {code}"
+                f"/usr/bin/open -n -a OBS.app --args --multi --profile {code} --collection {code}"
             )
         elif is_windows():
+            path32 = "C:/Program Files (x86)/obs-studio/bin/32bit/"
+            path64 = "C:/Program Files/obs-studio/bin/64bit/"
+            if Path(path32).exists():
+                path = path32
+                obs_name = "obs32"
+            elif Path(path64).exists():
+                path = path64
+                obs_name = "obs64"
+            else:
+                raise ValueError("No OBS instance present")
             args = shlex.split(
-                f"C:/Program Files/obs-studio/bin/64bit/obs.exe -multi -profile {code} -collection {code}",
+                f'{obs_name}.exe --multi --profile "{code}" --collection "{code}"',
                 posix=False,
             )
+
         else:
             logging.error("Not supported platform")
             return
+        os.chdir(path)
+        logging.info(f"Args for opening: {args}")
         subprocess.Popen(args)
+        os.chdir(app_dir)
 
 
 def rm_tree(pth: Path):
@@ -369,11 +399,12 @@ class ObsManagerModel(Atom):
             return obs
         self.obs_instances.append(obs)
         self.status = f"OBS configuration with address {obs.host}:{obs.port} created!"
+        logging.debug(self.status)
         return obs
 
-    def pop_obs_instance(self):
-        obs = self.obs_instances.pop()
+    def remove_obs_instance(self, obs):
         obs.disconnect()
+        self.obs_instances.remove(obs)
 
     def __getstate__(self):
         return dict(
@@ -392,12 +423,16 @@ class ObsManagerModel(Atom):
     def switch_to_lang(self, next_lang_code):
         if next_lang_code == self.current_lang_code:
             logging.info(f"Already at {next_lang_code}")
-            return
+
         next_obs = None
         for obs in self.obs_instances:
             if next_lang_code == self.ORIGINAL_LANG:
                 obs.switch_to_origin()
                 continue
+            elif self.current_lang_code == self.ORIGINAL_LANG and obs.lang_code != next_lang_code:
+                obs.switch_to_translation()
+                continue
+
             if obs.lang_code == next_lang_code:
                 obs.switch_to_origin()
                 next_obs = obs
@@ -405,7 +440,9 @@ class ObsManagerModel(Atom):
             elif obs.lang_code == self.current_lang_code:
                 obs.switch_to_translation()
                 logging.info(f"OBS {obs.lang_code} was switched to TRANSLATION sound")
+
         self.status = f"Switched from {self.current_lang_code} to {next_lang_code}!"
+        logging.debug(self.status)
         self.current_lang_code = next_lang_code
         return next_obs
 

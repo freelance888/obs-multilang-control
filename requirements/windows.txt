@@ -1,0 +1,2 @@
+-r base.txt
+pypiwin32==223

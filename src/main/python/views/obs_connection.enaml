@@ -1,34 +1,50 @@
 from enaml.layout.api import hbox
 from enaml.core.include import Include
 from enaml.widgets.api import (
-    DockPane, Container, Label, Field, Form, PushButton, Separator, VGroup, HGroup, SpinBox
+    DockPane, Container, Label, Field, Form, PushButton, Separator, VGroup, HGroup, SpinBox, CheckBox
 )
 
 
 enamldef ObsConnection(Container):
     attr obs
+    attr obs_manager
+    alias select
 
     padding = 2
     constraints = [
-        hbox(lang_label, host_field, port_field, add_button),
+        hbox(select, lang_label, host_field, port_field, connect_button),
+        select.width == 10,
         lang_label.width == 15,
         host_field.width == 80,
         port_field.width == 55,
-        add_button.width == 65
+        connect_button.width == 65
     ]
     background << "green" if obs.is_connected and obs.is_stream_started else ""
+
+    func lock():
+        select.enabled = False
+        host_field.enabled = False
+        port_field.enabled = False
+        connect_button.enabled = False
+
+    func unlock():
+        select.enabled = True
+        host_field.enabled = True
+        port_field.enabled = True
+        connect_button.enabled = True
+
+    CheckBox: select:
+        checked = False
     Label: lang_label:
         text << obs.lang_code
     Field: host_field:
         placeholder = "Host"
         text := obs.host
-        enabled << True if not obs.is_connected else False
     SpinBox: port_field:
-        minimum = 4444
+        minimum = 4441
         maximum = 4464
         value := obs.port
-        enabled << True if not obs.is_connected else False
-    PushButton: add_button:
+    PushButton: connect_button:
         text << "Connect" if not obs.is_connected else "Disc.."
         checkable = True
         checked << obs.is_connected
@@ -49,7 +65,7 @@ enamldef ObsConnectionManager(DockPane):
         VGroup:
             Include: inc:
                 objects << [
-                    ObsConnection(obs=obs)
+                    ObsConnection(obs=obs, obs_manager=obs_manager)
                     for obs in obs_manager.obs_instances
                 ]
             Separator:
@@ -63,5 +79,19 @@ enamldef ObsConnectionManager(DockPane):
                 PushButton:
                     text = "Remove"
                     clicked ::
-                        obs_manager.pop_obs_instance()
+                        selected_obs = [obj.obs for obj in inc.objects if obj.select.checked]
+                        for obs in selected_obs:
+                            obs_manager.remove_obs_instance(obs)
                         obs_manager.status = "Last connection removed!"
+                PushButton:
+                    attr locked = False
+                    text << "Lock" if not self.locked else "Unlock"
+                    clicked ::
+                        if self.locked:
+                            for obj in inc.objects:
+                                obj.unlock()
+                            self.locked = False
+                        else:
+                            for obj in inc.objects:
+                                obj.lock()
+                            self.locked = True

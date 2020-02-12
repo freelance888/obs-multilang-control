@@ -111,9 +111,8 @@ class AppContext(ApplicationContext):
         new_profile = Profile()
         obs_config.update_available_profiles()
         obs_configuration_view = ObsConfigurationManager(
-            obs_config=obs_config, profile=new_profile
+            parent=obs_control_view, obs_config=obs_config, profile=new_profile
         )
-        obs_configuration_view.show()
         parent = QtWidgets.QWidget()
         tray_icon = SystemTrayIcon(
             self.app_icon, parent, obs_control_view, obs_configuration_view

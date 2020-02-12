@@ -1,8 +1,8 @@
 {
-    "app_name": "obs-control",
+    "app_name": "obs-multilang-control",
     "author": "Serhii",
     "main_module": "src/main/python/main.py",
-    "version": "1.1.1",
+    "version": "1.2.0",
     "hidden_imports": [
         "enaml",
         "enaml.core.compiler_helpers",
@@ -12,7 +12,6 @@
         "enaml.widgets.api",
         "enaml.widgets.form",
         "enaml.layout.api",
-        "enaml.core.api",
-        "enaml.stdlib.fields"
+        "enaml.core.api"
     ]
 }
