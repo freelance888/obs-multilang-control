@@ -429,6 +429,10 @@ class ObsManagerModel(Atom):
             if next_lang_code == self.ORIGINAL_LANG:
                 obs.switch_to_origin()
                 continue
+            elif self.current_lang_code == self.ORIGINAL_LANG and obs.lang_code != next_lang_code:
+                obs.switch_to_translation()
+                continue
+
             if obs.lang_code == next_lang_code:
                 obs.switch_to_origin()
                 next_obs = obs
@@ -436,6 +440,7 @@ class ObsManagerModel(Atom):
             elif obs.lang_code == self.current_lang_code:
                 obs.switch_to_translation()
                 logging.info(f"OBS {obs.lang_code} was switched to TRANSLATION sound")
+
         self.status = f"Switched from {self.current_lang_code} to {next_lang_code}!"
         logging.debug(self.status)
         self.current_lang_code = next_lang_code
