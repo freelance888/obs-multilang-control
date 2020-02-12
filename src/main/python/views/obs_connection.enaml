@@ -83,3 +83,15 @@ enamldef ObsConnectionManager(DockPane):
                         for obs in selected_obs:
                             obs_manager.remove_obs_instance(obs)
                         obs_manager.status = "Last connection removed!"
+                PushButton:
+                    attr locked = False
+                    text << "Lock" if not self.locked else "Unlock"
+                    clicked ::
+                        if self.locked:
+                            for obj in inc.objects:
+                                obj.unlock()
+                            self.locked = False
+                        else:
+                            for obj in inc.objects:
+                                obj.lock()
+                            self.locked = True
