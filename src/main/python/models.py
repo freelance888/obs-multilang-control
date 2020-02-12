@@ -10,6 +10,7 @@ from pathlib import Path
 from string import Template
 from typing import List
 
+import trafaret as t
 from atom.containerlist import ContainerList
 from atom.dict import Dict
 from atom.atom import Atom
@@ -24,6 +25,7 @@ DEFAULT_PORT = 4441
 
 
 def _create_connection(host, port, password=None):
+    host = t.IPv4.check(host)
     ws = obsws(host, port, password)
     try:
         ws.connect()
@@ -380,7 +382,7 @@ class ObsManagerModel(Atom):
         if isinstance(obs_or_host, ObsInstanceModel):
             obs = obs_or_host
         elif obs_or_host and port:
-            obs = ObsInstanceModel(host=obs_or_host.strip(), port=port)
+            obs = ObsInstanceModel(host=obs_or_host, port=port)
         else:
             obs = ObsInstanceModel()
         if obs.port != DEFAULT_PORT and obs.port in [
