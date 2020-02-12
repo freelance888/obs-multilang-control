@@ -19,6 +19,8 @@ from atom.scalars import Unicode, Bool, Int, Float
 from fbs_runtime.platform import is_mac, is_windows
 from obswebsocket import obsws, requests, events
 
+from utils import is_open
+
 DEFAULT_LANG = "Ru"
 DEFAULT_HOST = "127.0.0.1"
 DEFAULT_PORT = 4441
@@ -26,6 +28,9 @@ DEFAULT_PORT = 4441
 
 def _create_connection(host, port, password=None):
     host = t.IPv4.check(host)
+    if not is_open(host, port):
+        logging.error(f"Address {host}:{port} not reachable")
+        return None
     ws = obsws(host, port, password)
     try:
         ws.connect()
@@ -342,14 +347,15 @@ class ObsConfigurationModel(Atom):
             path64 = "C:/Program Files/obs-studio/bin/64bit/"
             if Path(path32).exists():
                 path = path32
-                obs_name = 'obs32'
+                obs_name = "obs32"
             elif Path(path64).exists():
                 path = path64
-                obs_name = 'obs64'
+                obs_name = "obs64"
             else:
                 raise ValueError("No OBS instance present")
             args = shlex.split(
-                f'{obs_name}.exe --multi --profile "{code}" --collection "{code}"', posix=False,
+                f'{obs_name}.exe --multi --profile "{code}" --collection "{code}"',
+                posix=False,
             )
 
         else:
@@ -378,7 +384,7 @@ class ObsManagerModel(Atom):
     state_path = Unicode()
     status = Unicode()
 
-    def  add_obs_instance(self, obs_or_host=None, port=None):
+    def add_obs_instance(self, obs_or_host=None, port=None):
         if isinstance(obs_or_host, ObsInstanceModel):
             obs = obs_or_host
         elif obs_or_host and port:
