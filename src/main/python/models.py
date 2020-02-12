@@ -394,9 +394,9 @@ class ObsManagerModel(Atom):
         logging.debug(self.status)
         return obs
 
-    def pop_obs_instance(self):
-        obs = self.obs_instances.pop()
+    def remove_obs_instance(self, obs):
         obs.disconnect()
+        self.obs_instances.remove(obs)
 
     def __getstate__(self):
         return dict(
