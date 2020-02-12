@@ -1,3 +1,14 @@
+## [1.2.0] - 12-02-2020
+### Fixed
+- Switch to Origin lang
+- Freezes during connection to non existing host
+- OBS launch on Windows 7
+### Added
+- Lock\unlock button for OBS connections menu
+- Remove OBS profiles and connections by selection  
+### Update
+- OBS templates for profiles and scenes
+
 ## [1.1.1] - 05-01-2020
 ### Fixed
 - Broken menu navigation
