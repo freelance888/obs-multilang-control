@@ -23,6 +23,7 @@ from utils import is_open
 
 DEFAULT_LANG = "Ru"
 DEFAULT_HOST = "127.0.0.1"
+DEFAULT_YOUTUBE_STREAM_URL = "rtmp://a.rtmp.youtube.com/live2"
 DEFAULT_PORT = 4441
 
 
@@ -74,9 +75,9 @@ class ObsInstanceModel(Atom):
 
     is_stream_started = Bool()
     is_audio_muted = Bool()
-    # stream_server_url = Unicode()
-    # stream_key = Unicode()
-    # stream_settings = Dict(dict(type='rtmp_common', save=True, settings=dict(ser)))
+    stream_server_url = Unicode(default=DEFAULT_YOUTUBE_STREAM_URL)
+    stream_key = Unicode()
+    stream_settings = Dict(default=dict(type="rtmp_custom", save=True))
     origin_volume_level_on_origin = Float(1.0)
 
     origin_volume_level_on_trans = Float(0.20)
@@ -124,7 +125,7 @@ class ObsInstanceModel(Atom):
         if ws is None:
             return False
         self.ws = ws
-        self._populate_data()
+        self._receive_data_from_obs()
         self._register_callbacks()
         self.is_connected = True
         return self.is_connected
@@ -159,7 +160,7 @@ class ObsInstanceModel(Atom):
         self.ws.register(handle_streaming_status, events.StreamStopped)
         self.ws.register(handle_exiting, events.Exiting)
 
-    def _populate_data(self):
+    def _receive_data_from_obs(self):
         self.lang_code = _current_obs_lang(self.ws)
         scene = _current_obs_scene(self.ws)
         for source in scene["sources"]:
@@ -169,10 +170,10 @@ class ObsInstanceModel(Atom):
                 self.trans_source = source
         self.scene_name = scene["name"]
 
-    # settings = _current_obs_stream_settings(self.ws)
-    # if settings["type"] == "rtmp_common":
-    #     self.stream_key = settings["settings"]["key"]
-    #     self.stream_server_url = settings["settings"]["server"]
+        settings = _current_obs_stream_settings(self.ws)
+        if settings["settings"]:
+            self.stream_key = settings["settings"]["key"]
+            self.stream_server_url = settings["settings"]["server"]
 
     def _set_mute(self, source_name, mute):
         self.ws.call(requests.SetMute(source_name, mute))
@@ -193,6 +194,17 @@ class ObsInstanceModel(Atom):
         self.ws.disconnect()
         self.is_connected = False
         return self.is_connected
+
+    def populate_steam_settings_to_obs(self):
+        self.stream_settings["key"] = self.stream_key.strip()
+        self.stream_settings["server"] = self.stream_server_url.strip()
+        self.ws.call(
+            requests.SetStreamSettings(
+                type=self.stream_settings["type"],
+                save=True,
+                settings=self.stream_settings,
+            )
+        )
 
     def __setstate__(self, state):
         self.host = state["host"]
@@ -427,7 +439,10 @@ class ObsManagerModel(Atom):
             if next_lang_code == self.ORIGINAL_LANG:
                 obs.switch_to_origin()
                 continue
-            elif self.current_lang_code == self.ORIGINAL_LANG and obs.lang_code != next_lang_code:
+            elif (
+                self.current_lang_code == self.ORIGINAL_LANG
+                and obs.lang_code != next_lang_code
+            ):
                 obs.switch_to_translation()
                 continue
 
@@ -476,3 +491,7 @@ class ObsManagerModel(Atom):
     def unmute_audios(self):
         for o in self.obs_instances:
             o.unmute_audio()
+
+    def populate_streams_settings(self):
+        for o in self.obs_instances:
+            o.populate_steam_settings_to_obs()
