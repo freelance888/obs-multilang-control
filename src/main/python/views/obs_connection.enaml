@@ -11,13 +11,18 @@ enamldef ObsConnection(Container):
     alias select
 
     padding = 2
+    resist_width = 'ignore'
+    resist_height = 'ignore'
     constraints = [
-        hbox(select, lang_label, host_field, port_field, connect_button),
+        hbox(select, lang_label, host_field, port_field, stream_server_url_field, stream_key_field, connect_button),
         select.width == 10,
         lang_label.width == 15,
         host_field.width == 80,
         port_field.width == 55,
-        connect_button.width == 65
+        stream_server_url_field.width == 120,
+        stream_key_field.width == 120,
+        connect_button.width == 65,
+        width >= 200
     ]
     background << "green" if obs.is_connected and obs.is_stream_started else ""
 
@@ -25,12 +30,16 @@ enamldef ObsConnection(Container):
         select.enabled = False
         host_field.enabled = False
         port_field.enabled = False
+        stream_server_url_field.enabled = False
+        stream_key_field.enabled = False
         connect_button.enabled = False
 
     func unlock():
         select.enabled = True
         host_field.enabled = True
         port_field.enabled = True
+        stream_server_url_field.enabled = True
+        stream_key_field.enabled = True
         connect_button.enabled = True
 
     CheckBox: select:
@@ -40,6 +49,12 @@ enamldef ObsConnection(Container):
     Field: host_field:
         placeholder = "Host"
         text := obs.host
+    Field: stream_server_url_field:
+        placeholder = "Stream Server URL"
+        text := obs.stream_server_url
+    Field: stream_key_field:
+        placeholder = "Stream Key"
+        text := obs.stream_key
     SpinBox: port_field:
         minimum = 4441
         maximum = 4464
@@ -99,3 +114,10 @@ enamldef ObsConnectionManager(DockPane):
                             add_btn.enabled = False
                             remove_btn.enabled = False
                             self.locked = True
+            Separator:
+                pass
+            PushButton:
+                 text = "Populate streams settings to OBS"
+                 clicked ::
+                     obs_manager.populate_streams_settings()
+                     obs_manager.status = "Stream settings have been populated!"
