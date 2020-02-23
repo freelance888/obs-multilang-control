@@ -71,12 +71,12 @@ enamldef ObsConnectionManager(DockPane):
             Separator:
                  pass
             HGroup:
-                PushButton:
+                PushButton: add_btn:
                     text = "Add"
                     clicked ::
                         obs_manager.add_obs_instance()
                         obs_manager.status = "New connection added!"
-                PushButton:
+                PushButton: remove_btn:
                     text = "Remove"
                     clicked ::
                         selected_obs = [obj.obs for obj in inc.objects if obj.select.checked]
@@ -90,8 +90,12 @@ enamldef ObsConnectionManager(DockPane):
                         if self.locked:
                             for obj in inc.objects:
                                 obj.unlock()
+                            add_btn.enabled = True
+                            remove_btn.enabled = True
                             self.locked = False
                         else:
                             for obj in inc.objects:
                                 obj.lock()
+                            add_btn.enabled = False
+                            remove_btn.enabled = False
                             self.locked = True
