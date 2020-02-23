@@ -50,8 +50,6 @@ def _current_obs_lang(ws):
 
 def _current_obs_scene(ws):
     scenes = ws.call(requests.GetSceneList()).datain["scenes"]
-    if len(scenes) > 1:
-        raise ValueError("Only one `Scene` should be present in OBS")
     if scenes[0]["name"].lower() != "scene":
         raise ValueError("Scene should have name `Scene`")
     return scenes[0]
