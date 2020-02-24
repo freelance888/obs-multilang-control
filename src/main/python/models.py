@@ -196,15 +196,16 @@ class ObsInstanceModel(Atom):
         return self.is_connected
 
     def populate_steam_settings_to_obs(self):
-        self.stream_settings["key"] = self.stream_key.strip()
-        self.stream_settings["server"] = self.stream_server_url.strip()
-        self.ws.call(
+        result = self.ws.call(
             requests.SetStreamSettings(
                 type=self.stream_settings["type"],
                 save=True,
                 settings=self.stream_settings,
+                settings_server=self.stream_key.strip(),
+                settings_key=self.stream_server_url.strip(),
             )
         )
+        print(result)
 
     def __setstate__(self, state):
         self.host = state["host"]
