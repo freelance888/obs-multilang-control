@@ -2,7 +2,7 @@ from enaml.layout.api import vbox, hbox, grid
 from enaml.core.api import Include
 from enaml.stdlib.message_box import question
 from enaml.widgets.api import (
-    MainWindow, Label, PushButton, VGroup, Separator, StatusBar, StatusItem
+     MainWindow, Label, PushButton, VGroup, Separator, StatusBar, StatusItem
 )
 
 from .obs_connection import ObsConnectionManager
@@ -11,7 +11,9 @@ from .lang_switcher import LangSwitcher
 
 enamldef MainMenu(VGroup):
     attr obs_manager
-
+    constraints = [
+        (width == 200) | "strong"
+    ]
     PushButton:
         text = "Save state"
         clicked ::
@@ -67,7 +69,6 @@ enamldef MainMenu(VGroup):
 enamldef MainWindowView(MainWindow): window:
     attr obs_manager
 
-    initial_size = (400, 400)
     title = "OBS Multilang Control"
 
     MainMenu:

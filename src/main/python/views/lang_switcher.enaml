@@ -1,6 +1,6 @@
 from enaml.core.api import Include
 from enaml.widgets.api import (
-    DockPane, Label, Field, Container, PushButton
+    DockPane, Label, Field, Container, PushButton, VGroup
 )
 
 enamldef LangButton(PushButton):
@@ -18,7 +18,12 @@ enamldef LangSwitcher(DockPane):
     attr obs_manager
     closable = False
 
-    Container:
+    VGroup:
+        resist_width = 'ignore'
+        resist_height = 'ignore'
+        constraints = [
+             width == 560
+        ]
         Label: cur_lang:
             text << "Current lang: {}".format(obs_manager.current_lang_code)
         Include: inc:

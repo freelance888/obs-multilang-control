@@ -19,8 +19,8 @@ enamldef ObsConnection(Container):
         lang_label.width == 15,
         host_field.width == 80,
         port_field.width == 55,
-        stream_server_url_field.width == 120,
-        stream_key_field.width == 120,
+        stream_server_url_field.width == 150,
+        stream_key_field.width == 150,
         connect_button.width == 65,
         width >= 200
     ]
