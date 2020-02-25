@@ -388,7 +388,8 @@ def rm_tree(pth: Path):
 
 
 class ObsManagerModel(Atom):
-    ORIGINAL_LANG = "Original"
+    ORIGINAL_ONLY = "Original only"
+    TRANSLATION_ONLY = "Translation only"
 
     current_lang_code = Unicode()
     obs_instances: List[ObsInstanceModel] = ContainerList(default=[ObsInstanceModel()])
@@ -437,13 +438,16 @@ class ObsManagerModel(Atom):
 
         next_obs = None
         for obs in self.obs_instances:
-            if next_lang_code == self.ORIGINAL_LANG:
+            if next_lang_code == self.ORIGINAL_ONLY or (
+                self.current_lang_code == self.TRANSLATION_ONLY
+                and obs.lang_code != next_lang_code
+            ):
                 obs.switch_to_origin()
                 continue
             elif (
-                self.current_lang_code == self.ORIGINAL_LANG
+                self.current_lang_code == self.ORIGINAL_ONLY
                 and obs.lang_code != next_lang_code
-            ):
+            ) or next_lang_code == self.TRANSLATION_ONLY:
                 obs.switch_to_translation()
                 continue
 
