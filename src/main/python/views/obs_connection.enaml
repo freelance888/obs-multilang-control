@@ -51,10 +51,10 @@ enamldef ObsConnection(Container):
         text := obs.host
     Field: stream_server_url_field:
         placeholder = "Stream Server URL"
-        text := obs.stream_server_url
+        text := obs.stream_settings['server']
     Field: stream_key_field:
         placeholder = "Stream Key"
-        text := obs.stream_key
+        text := obs.stream_settings['key']
     SpinBox: port_field:
         minimum = 4441
         maximum = 4464

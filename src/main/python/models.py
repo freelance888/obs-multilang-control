@@ -6,6 +6,7 @@ import os
 import shlex
 import shutil
 import subprocess
+from copy import copy
 from pathlib import Path
 from string import Template
 from typing import List
@@ -75,9 +76,16 @@ class ObsInstanceModel(Atom):
 
     is_stream_started = Bool()
     is_audio_muted = Bool()
-    stream_server_url = Unicode(default=DEFAULT_YOUTUBE_STREAM_URL)
-    stream_key = Unicode()
-    stream_settings = Dict(default=dict(type="rtmp_custom", save=True))
+    stream_settings = Dict(
+        default=dict(
+            bwtest=False,
+            type="rtmp_custom",
+            save=True,
+            use_auth=False,
+            key="",
+            server=DEFAULT_YOUTUBE_STREAM_URL,
+        )
+    )
     origin_volume_level_on_origin = Float(1.0)
 
     origin_volume_level_on_trans = Float(0.20)
@@ -172,8 +180,7 @@ class ObsInstanceModel(Atom):
 
         settings = _current_obs_stream_settings(self.ws)
         if settings["settings"]:
-            self.stream_key = settings["settings"]["key"]
-            self.stream_server_url = settings["settings"]["server"]
+            self.stream_settings = settings["settings"]
 
     def _set_mute(self, source_name, mute):
         self.ws.call(requests.SetMute(source_name, mute))
@@ -196,16 +203,15 @@ class ObsInstanceModel(Atom):
         return self.is_connected
 
     def populate_steam_settings_to_obs(self):
+        settings = copy(self.stream_settings)
+        settings["key"] = settings["key"].strip()
+        settings["server"] = settings["server"].strip()
         result = self.ws.call(
             requests.SetStreamSettings(
-                type=self.stream_settings["type"],
-                save=True,
-                settings=self.stream_settings,
-                settings_server=self.stream_key.strip(),
-                settings_key=self.stream_server_url.strip(),
+                type=self.stream_settings["type"], save=True, settings=settings,
             )
         )
-        print(result)
+        return result.status
 
     def __setstate__(self, state):
         self.host = state["host"]
@@ -499,4 +505,5 @@ class ObsManagerModel(Atom):
 
     def populate_streams_settings(self):
         for o in self.obs_instances:
-            o.populate_steam_settings_to_obs()
+            if o.is_connected:
+                o.populate_steam_settings_to_obs()
