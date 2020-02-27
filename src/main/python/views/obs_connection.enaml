@@ -101,6 +101,7 @@ enamldef ObsConnectionManager(DockPane):
                 PushButton:
                     attr locked = False
                     text << "Lock" if not self.locked else "Unlock"
+                    checkable = True
                     clicked ::
                         if self.locked:
                             for obj in inc.objects:
