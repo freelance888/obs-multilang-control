@@ -1,11 +1,22 @@
+## [1.3.0] - 27-02-2020
+### Updated
+- Window size and general layout have
+- Lock button should lock `Add` and `Remove` button as well
+- Make lock button checkable
+### Added
+- Set `Translation only` for streams in addition to `Original only`
+- Stream keys could be populated to OBS
+### Fixed
+- Raising exception when multiple scenes presented in OBS
+
 ## [1.2.0] - 12-02-2020
+### Added
+- Lock\unlock button for OBS connections menu
+- Remove OBS profiles and connections by selection  
 ### Fixed
 - Switch to Origin lang
 - Freezes during connection to non existing host
 - OBS launch on Windows 7
-### Added
-- Lock\unlock button for OBS connections menu
-- Remove OBS profiles and connections by selection  
 ### Update
 - OBS templates for profiles and scenes
 
