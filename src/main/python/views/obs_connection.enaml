@@ -107,16 +107,18 @@ enamldef ObsConnectionManager(DockPane):
                                 obj.unlock()
                             add_btn.enabled = True
                             remove_btn.enabled = True
+                            populate_btn.enabled = True
                             self.locked = False
                         else:
                             for obj in inc.objects:
                                 obj.lock()
                             add_btn.enabled = False
                             remove_btn.enabled = False
+                            populate_btn.enabled = False
                             self.locked = True
             Separator:
                 pass
-            PushButton:
+            PushButton: populate_btn:
                  text = "Populate streams settings to OBS"
                  clicked ::
                      obs_manager.populate_streams_settings()
