@@ -185,6 +185,10 @@ class ObsInstanceModel(Atom):
     def _set_mute(self, source_name, mute):
         self.ws.call(requests.SetMute(source_name, mute))
 
+    def mute_translation_audio(self):
+        self._set_mute(self.trans_source["name"], True)
+        self.is_audio_muted = True
+
     def mute_audio(self):
         self._set_mute(self.origin_source["name"], True)
         self._set_mute(self.trans_source["name"], True)
@@ -494,6 +498,10 @@ class ObsManagerModel(Atom):
     def stop_streams(self):
         for o in self.obs_instances:
             o.stop_stream()
+
+    def mute_translation_audios(self):
+        for o in self.obs_instances:
+            o.mute_translation_audio()
 
     def mute_audios(self):
         for o in self.obs_instances:

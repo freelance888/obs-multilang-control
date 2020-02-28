@@ -55,12 +55,17 @@ enamldef MainMenu(VGroup):
     Separator:
         pass
     PushButton:
-         text = "Mute audio"
+         text = "Mute translation audio"
+         clicked ::
+             obs_manager.mute_translation_audios()
+             obs_manager.status = "Audio translation was muted!"
+    PushButton:
+         text = "Mute all audio"
          clicked ::
              obs_manager.mute_audios()
              obs_manager.status = "Audio was muted!"
     PushButton:
-         text = "Unmute audio"
+         text = "Unmute all audio"
          clicked ::
              obs_manager.unmute_audios()
              obs_manager.status = "Audio was unmuted!"
