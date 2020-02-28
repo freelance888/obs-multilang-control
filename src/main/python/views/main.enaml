@@ -2,7 +2,7 @@ from enaml.layout.api import vbox, hbox, grid
 from enaml.core.api import Include
 from enaml.stdlib.message_box import question
 from enaml.widgets.api import (
-     MainWindow, Label, PushButton, VGroup, Separator, StatusBar, StatusItem
+     MainWindow, Label, PushButton, VGroup, HGroup, Separator, StatusBar, StatusItem
 )
 
 from .obs_connection import ObsConnectionManager
@@ -14,62 +14,92 @@ enamldef MainMenu(VGroup):
     constraints = [
         (width == 200) | "strong"
     ]
-    PushButton:
-        text = "Save state"
-        clicked ::
-            obs_manager.save_state()
-            obs_manager.status = "State saved!"
-    PushButton:
-        text = "Restore state"
-        clicked ::
-            obs_manager.restore_state()
-            obs_manager.status = "State restored!"
+    Label:
+        text = "State management"
+    HGroup:
+        PushButton:
+            text = "Save"
+            clicked ::
+                obs_manager.save_state()
+                obs_manager.status = "State saved!"
+        PushButton:
+            text = "Restore"
+            clicked ::
+                obs_manager.restore_state()
+                obs_manager.status = "State restored!"
     Separator:
         pass
-    PushButton:
-        text = "Connect all"
-        clicked ::
-            obs_manager.connect_all()
-            obs_manager.status = "Connected to all OBS!"
-    PushButton:
-        text = "Disconnect all"
-        clicked ::
-            obs_manager.disconnect_all()
-            obs_manager.status = "Disconnected from all OBS!"
+    Label:
+        text = "OBS connection"
+    HGroup:
+        PushButton:
+            text = "Connect"
+            clicked ::
+                obs_manager.connect_all()
+                obs_manager.status = "Connected to all OBS!"
+        PushButton:
+            text = "Disc..."
+            clicked ::
+                obs_manager.disconnect_all()
+                obs_manager.status = "Disconnected from all OBS!"
     Separator:
         pass
-    PushButton:
-        text = "Start streams"
-        clicked ::
-            b = question(self, "Start stream", "Do you want to start stream?")
-            if b.was_clicked and b.action == 'accept':
-                obs_manager.start_streams()
-            obs_manager.status = "Streams started!"
-    PushButton:
-        text = "Stop streams"
-        clicked ::
-            b = question(self, "Stop stream", "Do you want to stop stream?")
-            if b.was_clicked and b.action == 'accept':
-                obs_manager.stop_streams()
-            obs_manager.status = "Streams stopped!"
+    Label:
+        text = "OBS Streaming"
+    HGroup:
+        PushButton:
+            text = "Start"
+            clicked ::
+                b = question(self, "Start stream", "Do you want to start stream?")
+                if b.was_clicked and b.action == 'accept':
+                    obs_manager.start_streams()
+                obs_manager.status = "Streams started!"
+        PushButton:
+            text = "Stop"
+            clicked ::
+                b = question(self, "Stop stream", "Do you want to stop stream?")
+                if b.was_clicked and b.action == 'accept':
+                    obs_manager.stop_streams()
+                obs_manager.status = "Streams stopped!"
+    PushButton: populate_btn:
+         text = "Populate streams settings"
+         clicked ::
+             obs_manager.populate_streams_settings()
+             obs_manager.status = "Stream settings have been populated!"
     Separator:
         pass
+    Label:
+        text = "Audio mode"
     PushButton:
-         text = "Mute translation audio"
+         text = "Mute translation"
          clicked ::
              obs_manager.mute_translation_audios()
              obs_manager.status = "Audio translation was muted!"
     PushButton:
-         text = "Mute all audio"
+         text = "Mute all"
          clicked ::
              obs_manager.mute_audios()
              obs_manager.status = "Audio was muted!"
     PushButton:
-         text = "Unmute all audio"
+         text = "Unmute all"
          clicked ::
              obs_manager.unmute_audios()
              obs_manager.status = "Audio was unmuted!"
-
+    Separator:
+        pass
+    Label:
+        text = "Cover image"
+    HGroup:
+        PushButton:
+            text = "Hide"
+            clicked ::
+                obs_manager.unmute_audios()
+                obs_manager.status = "Cover image was hidden!"
+        PushButton:
+            text = "Show"
+            clicked ::
+                obs_manager.unmute_audios()
+                obs_manager.status = "Cover image is displayed!"
 
 enamldef MainWindowView(MainWindow): window:
     attr obs_manager
