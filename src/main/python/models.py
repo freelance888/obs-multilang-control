@@ -308,6 +308,10 @@ class ObsConfigurationModel(Atom):
             Path(self.template_profile_path) / "service.json",
             lang_obs_profile_path / "service.json",
         )
+        shutil.copy(
+            Path(self.template_profile_path) / "streamEncoder.json",
+            lang_obs_profile_path / "streamEncoder.json",
+        )
 
     def _create_global_conf(self, basic_dir):
         config = self._read_config(basic_dir / "global.ini")
