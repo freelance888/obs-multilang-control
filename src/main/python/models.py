@@ -285,7 +285,7 @@ class ObsConfigurationModel(Atom):
     def _read_config(self, path):
         config = configparser.ConfigParser()
         config.optionxform = str
-        config.read(path)
+        config.read_file(codecs.open(path, "r", "utf-8-sig"))
         return config
 
     def _write_config(self, config, path):
@@ -308,6 +308,17 @@ class ObsConfigurationModel(Atom):
             Path(self.template_profile_path) / "service.json",
             lang_obs_profile_path / "service.json",
         )
+
+    def _create_global_conf(self, basic_dir):
+        config = self._read_config(basic_dir / "global.ini")
+        config["BasicWindow"][
+            "DockState"
+        ] = "AAAA/wAAAAD9AAAAAwAAAAAAAADkAAABEPwCAAAAAfsAAAASAG0AaQB4AGUAcgBEAG8AYwBrAQAAABUAAAEQAAAA+QD///8AAAABAAAAqAAAARD8AgAAAAL7AAAAFgBzAG8AdQByAGMAZQBzAEQAbwBjAGsBAAAAFQAAAH4AAAB+AP////sAAAAYAGMAbwBuAHQAcgBvAGwAcwBEAG8AYwBrAQAAAJcAAACOAAAAjgD///8AAAADAAADVAAAAJf8AQAAAAP7AAAAFABzAGMAZQBuAGUAcwBEAG8AYwBrAAAAAAAAAAHRAAAAqAD////7AAAAHgB0AHIAYQBuAHMAaQB0AGkAbwBuAHMARABvAGMAawAAAAJAAAAAhgAAAIIA////+wAAABIAcwB0AGEAdABzAEQAbwBjAGsCAAAE6QAAAH8AAAK8AAAAyAAAAJYAAAEQAAAABAAAAAQAAAAIAAAACPwAAAAA"
+        config["BasicWindow"]["VerticalVolControl"] = "true"
+        config["BasicWindow"][
+            "geometry"
+        ] = "AdnQywACAAAAAAUqAAAAJQAAB2MAAAGJAAAFMgAAAEQAAAdbAAABgQAAAAAAAAAAB4A="
+        self._write_config(config, basic_dir / "global.ini")
 
     def _create_scene(self, profile, basic_dir):
         lang_obs_scene_path = basic_dir / "scenes" / "{}.json".format(profile.lang_code)
@@ -338,6 +349,7 @@ class ObsConfigurationModel(Atom):
         for path in basic_dir.rglob("*"):
             if path.name.lower() == profile.lang_code.lower():
                 logging.error(f"`{path.name}` is already created")
+        self._create_global_conf(Path(self.obs_studio_config_path))
         self._create_profile(profile, basic_dir)
         self._create_scene(profile, basic_dir)
 
