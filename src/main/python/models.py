@@ -210,10 +210,12 @@ class ObsInstanceModel(Atom):
         settings = copy(self.stream_settings)
         settings["key"] = settings["key"].strip()
         settings["server"] = settings["server"].strip()
+        type = self.stream_settings.get("type")
+        if type is None:
+            if "rtmp.youtube.com" in settings["server"]:
+                type = "rtmp_common"
         result = self.ws.call(
-            requests.SetStreamSettings(
-                type=self.stream_settings["type"], save=True, settings=settings,
-            )
+            requests.SetStreamSettings(type=type, save=True, settings=settings,)
         )
         return result.status
 
