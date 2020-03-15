@@ -1,0 +1,4 @@
+DEFAULT_LANG = "Ru"
+DEFAULT_HOST = "127.0.0.1"
+DEFAULT_YOUTUBE_STREAM_URL = "rtmp://a.rtmp.youtube.com/live2"
+DEFAULT_PORT = 4441

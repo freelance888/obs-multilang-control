@@ -7,7 +7,6 @@ from enaml.widgets.api import (
 
 enamldef ObsConnection(Container):
     attr obs
-    attr obs_manager
     alias select
 
     padding = 2
@@ -80,7 +79,7 @@ enamldef ObsConnectionManager(DockPane):
         VGroup:
             Include: inc:
                 objects << [
-                    ObsConnection(obs=obs, obs_manager=obs_manager)
+                    ObsConnection(obs=obs)
                     for obs in obs_manager.obs_instances
                 ]
             Separator:

@@ -7,7 +7,8 @@ from fbs_runtime.application_context import cached_property
 from fbs_runtime.application_context.PyQt5 import ApplicationContext
 from fbs_runtime.platform import is_windows
 from enaml.qt.qt_application import QtApplication
-from models import ObsManagerModel, ObsConfigurationModel, Profile
+from models.obs_configuration import ObsConfigurationModel, Profile
+from models.obs_manager import ObsManagerModel
 
 
 class ShowHideWindowTray(object):

@@ -1,4 +1,5 @@
 import socket
+from pathlib import Path
 
 
 def is_open(ip, port, timeout=2):
@@ -12,3 +13,12 @@ def is_open(ip, port, timeout=2):
         return False
     finally:
         s.close()
+
+
+def rm_tree(pth: Path):
+    for child in pth.glob("*"):
+        if child.is_file():
+            child.unlink()
+        else:
+            rm_tree(child)
+    pth.rmdir()
